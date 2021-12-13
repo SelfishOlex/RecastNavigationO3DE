@@ -1,0 +1,16 @@
+{
+    "project_name": "NavExampleProject",
+    "origin": "The primary repo for NavExampleProject goes here: i.e. http://www.mydomain.com",
+    "license": "What license NavExampleProject uses goes here: i.e. https://opensource.org/licenses/MIT",
+    "display_name": "NavExampleProject",
+    "summary": "A short description of NavExampleProject.",
+    "canonical_tags": [
+        "Project"
+    ],
+    "user_tags": [
+        "NavExampleProject"
+    ],
+    "icon_path": "preview.png",
+    "engine": "o3de",
+    "external_subdirectories": []
+}

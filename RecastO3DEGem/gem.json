@@ -1,0 +1,17 @@
+{
+    "gem_name": "RecastO3DEGem",
+    "display_name": "RecastO3DEGem",
+    "license": "What license RecastO3DEGem uses goes here: i.e. Apache-2.0 Or MIT",
+    "license_url": "",
+    "origin": "The primary repo for RecastO3DEGem goes here: i.e. http://www.mydomain.com",
+    "type": "Code",
+    "summary": "A short description of RecastO3DEGem.",
+    "canonical_tags": [
+        "Gem"
+    ],
+    "user_tags": [
+        "RecastO3DEGem"
+    ],
+    "icon_path": "preview.png",
+    "requirements": ""
+}
