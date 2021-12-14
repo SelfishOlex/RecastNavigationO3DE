@@ -2,7 +2,7 @@
 #include <RecastO3DEGemModuleInterface.h>
 #include <RecastO3DEGemEditorSystemComponent.h>
 
-namespace RecastO3DEGem
+namespace RecastO3DE
 {
     class RecastO3DEGemEditorModule
         : public RecastO3DEGemModuleInterface
@@ -33,6 +33,6 @@ namespace RecastO3DEGem
             };
         }
     };
-}// namespace RecastO3DEGem
+}// namespace RecastO3DE
 
-AZ_DECLARE_MODULE_CLASS(Gem_RecastO3DEGem, RecastO3DEGem::RecastO3DEGemEditorModule)
+AZ_DECLARE_MODULE_CLASS(Gem_RecastO3DEGem, RecastO3DE::RecastO3DEGemEditorModule)

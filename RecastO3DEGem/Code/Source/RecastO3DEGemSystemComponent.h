@@ -3,14 +3,14 @@
 
 #include <AzCore/Component/Component.h>
 #include <AzCore/Component/TickBus.h>
-#include <RecastO3DEGem/RecastO3DEGemBus.h>
+#include <RecastO3DE/RecastO3DEGemBus.h>
 
-namespace RecastO3DEGem
+namespace RecastO3DE
 {
     class RecastO3DEGemSystemComponent
         : public AZ::Component
-        , protected RecastO3DEGemRequestBus::Handler
         , public AZ::TickBus::Handler
+        , public RecastO3DEGemRequestBus::Handler
     {
     public:
         AZ_COMPONENT(RecastO3DEGemSystemComponent, "{75930a76-7fe2-423e-b080-667b69cb0937}");
@@ -44,4 +44,4 @@ namespace RecastO3DEGem
         ////////////////////////////////////////////////////////////////////////
     };
 
-} // namespace RecastO3DEGem
+} // namespace RecastO3DE

@@ -5,11 +5,11 @@
 
 #include <AzToolsFramework/Entity/EditorEntityContextBus.h>
 
-namespace RecastO3DEGem
+namespace RecastO3DE
 {
     /// System component for RecastO3DEGem editor
     class RecastO3DEGemEditorSystemComponent
-        : public RecastO3DEGemSystemComponent
+        : public RecastO3DE::RecastO3DEGemSystemComponent
         , private AzToolsFramework::EditorEvents::Bus::Handler
     {
         using BaseSystemComponent = RecastO3DEGemSystemComponent;
@@ -30,4 +30,4 @@ namespace RecastO3DEGem
         void Activate() override;
         void Deactivate() override;
     };
-} // namespace RecastO3DEGem
+} // namespace RecastO3DE

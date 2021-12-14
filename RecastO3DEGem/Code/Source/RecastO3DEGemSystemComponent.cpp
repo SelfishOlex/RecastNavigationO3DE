@@ -4,8 +4,9 @@
 #include <AzCore/Serialization/SerializeContext.h>
 #include <AzCore/Serialization/EditContext.h>
 #include <AzCore/Serialization/EditContextConstants.inl>
+#include <RecastO3DE/RecastO3DEGemBus.h>
 
-namespace RecastO3DEGem
+namespace RecastO3DE
 {
     void RecastO3DEGemSystemComponent::Reflect(AZ::ReflectContext* context)
     {
@@ -48,15 +49,15 @@ namespace RecastO3DEGem
     {
         if (RecastO3DEGemInterface::Get() == nullptr)
         {
-            RecastO3DEGemInterface::Register(this);
+            RecastO3DE::RecastO3DEGemInterface::Register(this);
         }
     }
 
     RecastO3DEGemSystemComponent::~RecastO3DEGemSystemComponent()
     {
-        if (RecastO3DEGemInterface::Get() == this)
+        if (RecastO3DE::RecastO3DEGemInterface::Get() == this)
         {
-            RecastO3DEGemInterface::Unregister(this);
+            RecastO3DE::RecastO3DEGemInterface::Unregister(this);
         }
     }
 
@@ -66,18 +67,18 @@ namespace RecastO3DEGem
 
     void RecastO3DEGemSystemComponent::Activate()
     {
-        RecastO3DEGemRequestBus::Handler::BusConnect();
+        RecastO3DE::RecastO3DEGemRequestBus::Handler::BusConnect();
         AZ::TickBus::Handler::BusConnect();
     }
 
     void RecastO3DEGemSystemComponent::Deactivate()
     {
         AZ::TickBus::Handler::BusDisconnect();
-        RecastO3DEGemRequestBus::Handler::BusDisconnect();
+        RecastO3DE::RecastO3DEGemRequestBus::Handler::BusDisconnect();
     }
 
     void RecastO3DEGemSystemComponent::OnTick([[maybe_unused]] float deltaTime, [[maybe_unused]] AZ::ScriptTimePoint time)
     {
     }
 
-} // namespace RecastO3DEGem
+} // namespace RecastO3DE

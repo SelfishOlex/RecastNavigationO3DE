@@ -4,7 +4,7 @@
 #include <AzCore/EBus/EBus.h>
 #include <AzCore/Interface/Interface.h>
 
-namespace RecastO3DEGem
+namespace RecastO3DE
 {
     class RecastO3DEGemRequests
     {
@@ -28,4 +28,4 @@ namespace RecastO3DEGem
     using RecastO3DEGemRequestBus = AZ::EBus<RecastO3DEGemRequests, RecastO3DEGemBusTraits>;
     using RecastO3DEGemInterface = AZ::Interface<RecastO3DEGemRequests>;
 
-} // namespace RecastO3DEGem
+} // namespace RecastO3DE

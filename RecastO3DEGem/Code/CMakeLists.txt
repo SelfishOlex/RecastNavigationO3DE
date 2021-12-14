@@ -24,12 +24,18 @@ ly_add_target(
     INCLUDE_DIRECTORIES
         PUBLIC
             Include
+            ../External/DebugUtils/Include
+            ../External/Detour/Include
+            ../External/DetourCrowd/Include
+            ../External/DetourTileCache/Include
+            ../External/Recast/Include
         PRIVATE
             Source
     BUILD_DEPENDENCIES
         PUBLIC
             AZ::AzCore
             AZ::AzFramework
+            Gem::DebugDraw.Static
 )
 
 # Here add RecastO3DEGem target, it depends on the RecastO3DEGem.Static

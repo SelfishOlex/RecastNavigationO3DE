@@ -2,7 +2,7 @@
 #include <AzCore/Serialization/SerializeContext.h>
 #include <RecastO3DEGemEditorSystemComponent.h>
 
-namespace RecastO3DEGem
+namespace RecastO3DE
 {
     void RecastO3DEGemEditorSystemComponent::Reflect(AZ::ReflectContext* context)
     {
@@ -51,4 +51,4 @@ namespace RecastO3DEGem
         RecastO3DEGemSystemComponent::Deactivate();
     }
 
-} // namespace RecastO3DEGem
+} // namespace RecastO3DE

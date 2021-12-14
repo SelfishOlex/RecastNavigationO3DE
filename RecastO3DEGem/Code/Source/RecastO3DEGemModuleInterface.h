@@ -2,8 +2,13 @@
 #include <AzCore/Memory/SystemAllocator.h>
 #include <AzCore/Module/Module.h>
 #include <RecastO3DEGemSystemComponent.h>
+#include <Components/RecastNavigationAgentComponent.h>
+#include <Components/RecastNavigationCrowdAgentComponent.h>
+#include <Components/RecastNavigationCrowdComponent.h>
+#include <Components/RecastNavigationMeshComponent.h>
+#include <Components/RecastWalkableComponent.h>
 
-namespace RecastO3DEGem
+namespace RecastO3DE
 {
     class RecastO3DEGemModuleInterface
         : public AZ::Module
@@ -20,6 +25,12 @@ namespace RecastO3DEGem
             // This happens through the [MyComponent]::Reflect() function.
             m_descriptors.insert(m_descriptors.end(), {
                 RecastO3DEGemSystemComponent::CreateDescriptor(),
+                RecastO3DEGemSystemComponent::CreateDescriptor(),
+                RecastNavigationAgentComponent::CreateDescriptor(),
+                RecastNavigationMeshComponent::CreateDescriptor(),
+                RecastWalkableComponent::CreateDescriptor(),
+                RecastNavigationCrowdAgentComponent::CreateDescriptor(),
+                RecastNavigationCrowdComponent::CreateDescriptor(),
                 });
         }
 
@@ -29,8 +40,9 @@ namespace RecastO3DEGem
         AZ::ComponentTypeList GetRequiredSystemComponents() const override
         {
             return AZ::ComponentTypeList{
+                azrtti_typeid<RecastO3DE::RecastO3DEGemSystemComponent>(),
                 azrtti_typeid<RecastO3DEGemSystemComponent>(),
             };
         }
     };
-}// namespace RecastO3DEGem
+}// namespace RecastO3DE
