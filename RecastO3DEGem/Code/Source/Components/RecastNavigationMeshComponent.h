@@ -2,9 +2,7 @@
 #pragma once
 
 #include <DebugDraw.h>
-#include <DetourDebugDraw.h>
 #include <DetourNavMesh.h>
-#include <DetourNavMeshBuilder.h>
 #include <DetourNavMeshQuery.h>
 #include <Recast.h>
 
@@ -31,35 +29,35 @@ namespace RecastO3DE
         , public AZ::TickBus::Handler
     {
     public:
-        AZ_COMPONENT( RecastNavigationMeshComponent, "{a281f314-a525-4c05-876d-17eb632f14b4}" );
+        AZ_COMPONENT(RecastNavigationMeshComponent, "{a281f314-a525-4c05-876d-17eb632f14b4}");
 
-        static void Reflect( AZ::ReflectContext* context );
+        static void Reflect(AZ::ReflectContext* context);
 
-        static void GetProvidedServices( AZ::ComponentDescriptor::DependencyArrayType& provided );
-        static void GetIncompatibleServices( AZ::ComponentDescriptor::DependencyArrayType& incompatible );
-        static void GetRequiredServices( AZ::ComponentDescriptor::DependencyArrayType& required );
-        static void GetDependentServices( AZ::ComponentDescriptor::DependencyArrayType& dependent );
+        static void GetProvidedServices(AZ::ComponentDescriptor::DependencyArrayType& provided);
+        static void GetIncompatibleServices(AZ::ComponentDescriptor::DependencyArrayType& incompatible);
+        static void GetRequiredServices(AZ::ComponentDescriptor::DependencyArrayType& required);
+        static void GetDependentServices(AZ::ComponentDescriptor::DependencyArrayType& dependent);
 
         // RecastNavigationRequestBus interface implementation
         bool UpdateNavigationMesh() override;
-        void SetWorldBounds( const AZ::Aabb& worldBounds ) override;
-        AZStd::vector<AZ::Vector3> FindPathToEntity( AZ::EntityId fromEntity, AZ::EntityId toEntity ) override;
-        AZStd::vector<AZ::Vector3> FindPathToPosition( const AZ::Vector3& fromWorldPosition, const AZ::Vector3& targetWorldPosition ) override;
+        void SetWorldBounds(const AZ::Aabb& worldBounds) override;
+        AZStd::vector<AZ::Vector3> FindPathToEntity(AZ::EntityId fromEntity, AZ::EntityId toEntity) override;
+        AZStd::vector<AZ::Vector3> FindPathToPosition(const AZ::Vector3& fromWorldPosition, const AZ::Vector3& targetWorldPosition) override;
 
         // GameEntityContextEventBus
         void OnGameEntitiesStarted() override { /*UpdateNavigationMesh();*/ }
 
         // InputChannelEventListener
-        bool OnInputChannelEventFiltered( const AzFramework::InputChannel& inputChannel ) override;
+        bool OnInputChannelEventFiltered(const AzFramework::InputChannel& inputChannel) override;
 
         // AZ::Component interface implementation
         void Activate() override;
         void Deactivate() override;
 
         // TickBus
-        void OnTick( float deltaTime, AZ::ScriptTimePoint time ) override;
+        void OnTick(float deltaTime, AZ::ScriptTimePoint time) override;
 
-    protected:
+    private:
 
         bool UpdateNavigationMesh_JobThread();
         AZStd::atomic<bool> m_navMeshReady = false;
@@ -77,25 +75,24 @@ namespace RecastO3DE
             }
         };
 
-        Geometry GetColliderGeometry( const AZ::Aabb& aabb, const AzPhysics::SceneQueryHits& overlapHits );
+        Geometry GetColliderGeometry(const AZ::Aabb& aabb, const AzPhysics::SceneQueryHits& overlapHits);
 
-    private:
-        AZ::Aabb m_worldBounds;
+        AZ::Aabb m_worldBounds = AZ::Aabb::CreateNull();
 
         RecastNavigationMeshComponent::Geometry m_geom;
 
-        class CustomContext : public rcContext
+        class CustomContext final : public rcContext
         {
         public:
-            void doLog( const rcLogCategory, const char* message, const int ) override
+            void doLog(const rcLogCategory, const char* message, const int) override
             {
-                AZ_Printf( "Recast", "%s", message );
+                AZ_Printf("Recast", "%s", message);
             }
         };
 
         AZStd::unique_ptr<rcContext> m_ctx;
 
-        rcConfig m_cfg;
+        rcConfig m_cfg = {};
 
         float m_cellSize = 0.3F;
         float m_cellHeight = 0.2F;
@@ -117,7 +114,7 @@ namespace RecastO3DE
 
         RecastPointer<rcHeightfield> m_solid;
 
-        AZStd::vector<AZ::u8> m_triareas;
+        AZStd::vector<AZ::u8> m_trianglesAreas;
 
         bool m_keepInterResults = false;
 
@@ -127,42 +124,42 @@ namespace RecastO3DE
 
         RecastPointer<rcCompactHeightfield> m_chf;
 
-        RecastPointer<rcContourSet> m_cset;
+        RecastPointer<rcContourSet> m_contourSet;
 
         RecastPointer<rcPolyMesh> m_pmesh;
 
-        RecastPointer<rcPolyMeshDetail> m_dmesh;
+        RecastPointer<rcPolyMeshDetail> m_detailMesh;
 
         RecastPointer<dtNavMesh> m_navMesh;
         RecastPointer<dtNavMeshQuery> m_navQuery;
 
-        class CustomDebugDraw : public duDebugDraw
+        class CustomDebugDraw final : public duDebugDraw
         {
         public:
             ~CustomDebugDraw() override = default;
 
-            void depthMask( [[maybe_unused]] bool state ) override {}
+            void depthMask([[maybe_unused]] bool state) override {}
 
-            void texture( [[maybe_unused]] bool state ) override {}
+            void texture([[maybe_unused]] bool state) override {}
 
-            void begin( duDebugDrawPrimitives prim, float size = 1.0f ) override;
+            void begin(duDebugDrawPrimitives prim, float size = 1.0f) override;
 
-            void vertex( const float* pos, unsigned int color ) override { AddVertex( pos[0], pos[1], pos[2], color ); }
+            void vertex(const float* pos, unsigned int color) override { AddVertex(pos[0], pos[1], pos[2], color); }
 
-            void vertex( const float x, const float y, const float z, unsigned int color ) override { AddVertex( x, y, z, color ); }
+            void vertex(const float x, const float y, const float z, unsigned int color) override { AddVertex(x, y, z, color); }
 
-            void vertex( const float* pos, unsigned int color, [[maybe_unused]] const float* uv ) override { AddVertex( pos[0], pos[1], pos[2], color ); }
+            void vertex(const float* pos, unsigned int color, [[maybe_unused]] const float* uv) override { AddVertex(pos[0], pos[1], pos[2], color); }
 
-            void vertex( const float x, const float y, const float z, unsigned int color, [[maybe_unused]] const float u, [[maybe_unused]] const float v ) override { AddVertex( x, y, z, color ); }
+            void vertex(const float x, const float y, const float z, unsigned int color, [[maybe_unused]] const float u, [[maybe_unused]] const float v) override { AddVertex(x, y, z, color); }
 
             void end() override;
 
-            void SetColor( const AZ::Color& color ) { m_currentColor = color; }
+            void SetColor(const AZ::Color& color) { m_currentColor = color; }
 
         protected:
-            void AddVertex( float x, float y, float z, unsigned int color )
+            void AddVertex(float x, float y, float z, unsigned int color)
             {
-                m_verticesToDraw.push_back( AZStd::make_pair( AZ::Vector3( x, z, y ), color ) );
+                m_verticesToDraw.push_back(AZStd::make_pair(AZ::Vector3(x, z, y), color));
             }
 
             AZ::Color m_currentColor{ 1.F, 1, 1, 1 };
@@ -174,7 +171,7 @@ namespace RecastO3DE
 
         CustomDebugDraw m_customDebugDraw;
 
-        RecastVector3 GetPolyCenter( dtNavMesh* navMesh, dtPolyRef ref );
+        static RecastVector3 GetPolyCenter(const dtNavMesh* navMesh, dtPolyRef ref);
     };
 
 } // namespace RecastO3DE

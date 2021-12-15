@@ -27,6 +27,8 @@
 #include "DetourAlloc.h"
 #include "DetourAssert.h"
 
+#pragma optimize("", off)
+
 static unsigned short MESH_NULL_IDX = 0xffff;
 
 

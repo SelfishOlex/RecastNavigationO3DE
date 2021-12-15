@@ -20,7 +20,8 @@
                 "Id": 14126657869720434043,
                 "Child Entity Order": [
                     "Entity_[1176639161715]",
-                    "Entity_[307828276578]"
+                    "Entity_[307828276578]",
+                    "Entity_[307008896654]"
                 ]
             },
             "Component_[15230859088967841193]": {
@@ -205,7 +206,7 @@
                     "Controller": {
                         "Configuration": {
                             "Field of View": 55.0,
-                            "EditorEntityId": 1026301667076069903
+                            "EditorEntityId": 8411258842618612755
                         }
                     }
                 },
@@ -410,7 +411,14 @@
                 "Component_[10757302973393310045]": {
                     "$type": "{27F1E1A1-8D9D-4C3B-BD3A-AFB9762449C0} TransformComponent",
                     "Id": 10757302973393310045,
-                    "Parent Entity": "Entity_[1146574390643]"
+                    "Parent Entity": "Entity_[1146574390643]",
+                    "Transform Data": {
+                        "Translate": [
+                            0.0,
+                            0.0,
+                            0.5357093811035156
+                        ]
+                    }
                 },
                 "Component_[14505817420424255464]": {
                     "$type": "EditorInspectorComponent",
@@ -547,6 +555,111 @@
                 }
             }
         },
+        "Entity_[307008896654]": {
+            "Id": "Entity_[307008896654]",
+            "Name": "Terrain",
+            "Components": {
+                "Component_[11080914034273306508]": {
+                    "$type": "EditorLockComponent",
+                    "Id": 11080914034273306508
+                },
+                "Component_[13798008894885928316]": {
+                    "$type": "{27F1E1A1-8D9D-4C3B-BD3A-AFB9762449C0} TransformComponent",
+                    "Id": 13798008894885928316,
+                    "Parent Entity": "Entity_[1146574390643]",
+                    "Transform Data": {
+                        "Translate": [
+                            6.6054768562316895,
+                            2.254314661026001,
+                            -29.40243148803711
+                        ],
+                        "UniformScale": 30.0
+                    }
+                },
+                "Component_[14149956184259368487]": {
+                    "$type": "AZ::Render::EditorMeshComponent",
+                    "Id": 14149956184259368487,
+                    "Controller": {
+                        "Configuration": {
+                            "ModelAsset": {
+                                "assetId": {
+                                    "guid": "{B991E03B-F50D-552E-9E2D-64FA6DAB1CCB}",
+                                    "subId": 285127096
+                                },
+                                "assetHint": "materialeditor/viewportmodels/cube.azmodel"
+                            }
+                        }
+                    }
+                },
+                "Component_[14151619206055812542]": {
+                    "$type": "GenericComponentWrapper",
+                    "Id": 14151619206055812542,
+                    "m_template": {
+                        "$type": "RecastNavigationMeshComponent"
+                    }
+                },
+                "Component_[15051292451987548526]": {
+                    "$type": "EditorPendingCompositionComponent",
+                    "Id": 15051292451987548526
+                },
+                "Component_[1541659468324613072]": {
+                    "$type": "EditorEntitySortComponent",
+                    "Id": 1541659468324613072
+                },
+                "Component_[16367788754143543793]": {
+                    "$type": "EditorInspectorComponent",
+                    "Id": 16367788754143543793
+                },
+                "Component_[16385818614104716236]": {
+                    "$type": "EditorDisabledCompositionComponent",
+                    "Id": 16385818614104716236
+                },
+                "Component_[6016631572546337097]": {
+                    "$type": "EditorEntityIconComponent",
+                    "Id": 6016631572546337097
+                },
+                "Component_[6860114540355869809]": {
+                    "$type": "GenericComponentWrapper",
+                    "Id": 6860114540355869809,
+                    "m_template": {
+                        "$type": "RecastWalkableComponent"
+                    }
+                },
+                "Component_[7102888104992825155]": {
+                    "$type": "EditorColliderComponent",
+                    "Id": 7102888104992825155,
+                    "ColliderConfiguration": {
+                        "MaterialSelection": {
+                            "MaterialIds": [
+                                {}
+                            ]
+                        }
+                    },
+                    "ShapeConfiguration": {
+                        "ShapeType": 1,
+                        "Box": {
+                            "Scale": [
+                                30.0,
+                                30.0,
+                                30.0
+                            ]
+                        }
+                    }
+                },
+                "Component_[9192500387001036201]": {
+                    "$type": "EditorOnlyEntityComponent",
+                    "Id": 9192500387001036201
+                },
+                "Component_[9374761900053339398]": {
+                    "$type": "SelectionComponent",
+                    "Id": 9374761900053339398
+                },
+                "Component_[9726713333549785261]": {
+                    "$type": "EditorVisibilityComponent",
+                    "Id": 9726713333549785261
+                }
+            }
+        },
         "Entity_[307828276578]": {
             "Id": "Entity_[307828276578]",
             "Name": "NPC",
@@ -581,9 +694,9 @@
                     "Parent Entity": "Entity_[1146574390643]",
                     "Transform Data": {
                         "Translate": [
-                            1.1877269744873047,
-                            6.020997047424316,
-                            0.0
+                            -2.6253252029418945,
+                            12.559224128723145,
+                            0.7165927886962891
                         ]
                     }
                 },
@@ -608,6 +721,14 @@
                                 "assetHint": "materialeditor/viewportmodels/beveledcylinder.azmodel"
                             }
                         }
+                    }
+                },
+                "Component_[690077827349109122]": {
+                    "$type": "GenericComponentWrapper",
+                    "Id": 690077827349109122,
+                    "m_template": {
+                        "$type": "RecastNavigationAgentComponent",
+                        "Navigation Mesh Entity": ""
                     }
                 },
                 "Component_[8838085976160951017]": {

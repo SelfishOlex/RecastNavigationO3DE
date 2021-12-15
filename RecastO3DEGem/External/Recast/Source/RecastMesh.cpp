@@ -24,6 +24,8 @@
 #include "RecastAlloc.h"
 #include "RecastAssert.h"
 
+#pragma optimize("", off)
+
 struct rcEdge
 {
 	unsigned short vert[2];

@@ -2,9 +2,12 @@
 
 #include <CrySystemBus.h>
 #include <ISystem.h>
+#include <RecastDebugDraw.h>
 
 #include <AzCore/Component/TransformBus.h>
+#include <AzCore/Console/Console.h>
 #include <AzCore/Jobs/JobFunction.h>
+#include <AzCore/Math/ToString.h>
 #include <AzCore/Serialization/EditContext.h>
 #include <AzCore/Serialization/SerializeContext.h>
 #include <AzFramework/Input/Devices/Keyboard/InputDeviceKeyboard.h>
@@ -13,13 +16,16 @@
 #include <AzFramework/Physics/Common/PhysicsSceneQueries.h>
 #include <DebugDraw/DebugDrawBus.h>
 
+
+AZ_CVAR(bool, cl_navmesh_debug, true, nullptr, AZ::ConsoleFunctorFlags::Null, "If enabled, draw debug visual information about Navigation Mesh");
+
 #pragma optimize("", off)
 
 namespace RecastO3DE
 {
     void RecastNavigationMeshComponent::Reflect(AZ::ReflectContext* context)
     {
-        if (AZ::SerializeContext* serialize = azrtti_cast<AZ::SerializeContext*>(context))
+        if (const auto serialize = azrtti_cast<AZ::SerializeContext*>(context))
         {
             serialize->Class<RecastNavigationMeshComponent, AZ::Component>()
                 ->Version(3)
@@ -71,9 +77,6 @@ namespace RecastO3DE
             {
                 AZ::EntityId hitEntityId = overlapHit.m_entityId;
 
-                vertices.clear();
-                indices.clear();
-
                 bool isWalkable = false;
                 RecastWalkableRequestBus::EventResult(isWalkable, hitEntityId, &RecastWalkableRequestBus::Events::IsWalkable, GetEntityId());
                 if (isWalkable == false)
@@ -83,8 +86,6 @@ namespace RecastO3DE
 
                 // most physics bodies just have world transforms, but some also have local transforms including terrain.
                 // we are not applying the local orientation because it causes terrain geometry to be oriented incorrectly
-
-                const AZStd::pair<AZ::Vector3, AZ::Quaternion> localPose = overlapHit.m_shape->GetLocalPose();
 
                 AZ::Transform t = AZ::Transform::CreateIdentity();
                 AZ::TransformBus::EventResult(t, hitEntityId, &AZ::TransformBus::Events::GetWorldTM);
@@ -103,9 +104,9 @@ namespace RecastO3DE
 
                         for (size_t i = 2; i < indices.size(); i += 3)
                         {
-                            geom.m_indices.push_back(static_cast<AZ::u32>(indicesCount + indices[i]));
-                            geom.m_indices.push_back(static_cast<AZ::u32>(indicesCount + indices[i - 1]));
-                            geom.m_indices.push_back(static_cast<AZ::u32>(indicesCount + indices[i - 2]));
+                            geom.m_indices.push_back(aznumeric_cast<AZ::u32>(indicesCount + indices[i]));
+                            geom.m_indices.push_back(aznumeric_cast<AZ::u32>(indicesCount + indices[i - 1]));
+                            geom.m_indices.push_back(aznumeric_cast<AZ::u32>(indicesCount + indices[i - 2]));
                         }
 
                         indicesCount += vertices.size();
@@ -123,7 +124,7 @@ namespace RecastO3DE
 
     void RecastNavigationMeshComponent::CustomDebugDraw::begin(duDebugDrawPrimitives prim, [[maybe_unused]] float size)
     {
-        //AZ_Printf( "RecastNavigationMeshComponent", "duDebugDrawPrimitives = %d", (int)prim );
+        AZ_Printf("RecastNavigationMeshComponent", "duDebugDrawPrimitives = %fd", static_cast<double>(prim));
 
         m_currentPrim = prim;
         m_verticesToDraw.clear();
@@ -136,19 +137,19 @@ namespace RecastO3DE
         switch (m_currentPrim)
         {
         case DU_DRAW_POINTS:
-            for (size_t i = 0; i < m_verticesToDraw.size(); ++i)
+            for (auto& i : m_verticesToDraw)
             {
-                AZ::Color color;
-                color.FromU32(m_verticesToDraw[i].second);
+                AZ::Color color = AZ::Color::CreateZero();
+                color.FromU32(i.second);
 
                 DebugDraw::DebugDrawRequestBus::Broadcast(&DebugDraw::DebugDrawRequestBus::Events::DrawSphereAtLocation,
-                    m_verticesToDraw[i].first, 0.1F, color, drawTime);
+                    i.first, 0.1F, color, drawTime);
             }
             break;
         case DU_DRAW_TRIS:
             for (size_t i = 2; i < m_verticesToDraw.size(); i += 3)
             {
-                AZ::Color color;
+                AZ::Color color = AZ::Color::CreateZero();
                 color.FromU32(m_verticesToDraw[i].second);
 
                 DebugDraw::DebugDrawRequestBus::Broadcast(&DebugDraw::DebugDrawRequestBus::Events::DrawLineLocationToLocation,
@@ -164,7 +165,7 @@ namespace RecastO3DE
         case DU_DRAW_QUADS:
             for (size_t i = 3; i < m_verticesToDraw.size(); i += 4)
             {
-                AZ::Color color;
+                AZ::Color color = AZ::Color::CreateZero();
                 color.FromU32(m_verticesToDraw[i].second);
 
                 DebugDraw::DebugDrawRequestBus::Broadcast(&DebugDraw::DebugDrawRequestBus::Events::DrawLineLocationToLocation,
@@ -181,10 +182,9 @@ namespace RecastO3DE
             }
             break;
         case DU_DRAW_LINES:
-        default:
             for (size_t i = 1; i < m_verticesToDraw.size(); i += 2)
             {
-                AZ::Color color;
+                AZ::Color color = AZ::Color::CreateZero();
                 color.FromU32(m_verticesToDraw[i].second);
 
                 DebugDraw::DebugDrawRequestBus::Broadcast(&DebugDraw::DebugDrawRequestBus::Events::DrawLineLocationToLocation,
@@ -194,7 +194,7 @@ namespace RecastO3DE
         }
     }
 
-    RecastVector3 RecastNavigationMeshComponent::GetPolyCenter(dtNavMesh* navMesh, dtPolyRef ref)
+    RecastVector3 RecastNavigationMeshComponent::GetPolyCenter(const dtNavMesh* navMesh, dtPolyRef ref)
     {
         RecastVector3 centerRecast;
 
@@ -203,9 +203,9 @@ namespace RecastO3DE
         center[1] = 0;
         center[2] = 0;
 
-        const dtMeshTile* tile = 0;
-        const dtPoly* poly = 0;
-        dtStatus status = navMesh->getTileAndPolyByRef(ref, &tile, &poly);
+        const dtMeshTile* tile = nullptr;
+        const dtPoly* poly = nullptr;
+        const dtStatus status = navMesh->getTileAndPolyByRef(ref, &tile, &poly);
         if (dtStatusFailed(status))
         {
             return {};
@@ -216,14 +216,14 @@ namespace RecastO3DE
             return {};
         }
 
-        for (int i = 0; i < (int)poly->vertCount; ++i)
+        for (int i = 0; i < aznumeric_cast<int>(poly->vertCount); ++i)
         {
             const float* v = &tile->verts[poly->verts[i] * 3];
             center[0] += v[0];
             center[1] += v[1];
             center[2] += v[2];
         }
-        const float s = 1.0f / poly->vertCount;
+        const float s = 1.0f / aznumeric_cast<float>(poly->vertCount);
         center[0] *= s;
         center[1] *= s;
         center[2] *= s;
@@ -237,6 +237,11 @@ namespace RecastO3DE
 
     bool RecastNavigationMeshComponent::UpdateNavigationMesh()
     {
+        if (m_waitingOnNavMeshRebuild)
+        {
+            return false;
+        }
+
         m_navMeshReady = false;
         m_waitingOnNavMeshRebuild = true;
 
@@ -245,7 +250,7 @@ namespace RecastO3DE
 
         Physics::BoxShapeConfiguration shapeConfiguration;
         shapeConfiguration.m_dimensions = dimension;
-        
+
         AzPhysics::OverlapRequest request = AzPhysics::OverlapRequestHelpers::CreateBoxOverlapRequest(dimension, pose, nullptr);
         request.m_queryType = AzPhysics::SceneQuery::QueryType::Static;
         request.m_collisionGroup = AzPhysics::CollisionGroup::All;
@@ -281,10 +286,10 @@ namespace RecastO3DE
 
     bool RecastNavigationMeshComponent::UpdateNavigationMesh_JobThread()
     {
-        const float* verts = &m_geom.m_verts.front().m_x;
-        const int nverts = static_cast<int>(m_geom.m_verts.size());
-        const int* tris = &m_geom.m_indices[0];
-        const int ntris = static_cast<int>(m_geom.m_indices.size()) / 3;
+        const float* vertices = &m_geom.m_verts.front().m_x;
+        const int vertexCount = static_cast<int>(m_geom.m_verts.size());
+        const int* triangleData = &m_geom.m_indices[0];
+        const int triangleCount = static_cast<int>(m_geom.m_indices.size()) / 3;
 
         //
         // Step 1. Initialize build config.
@@ -295,14 +300,14 @@ namespace RecastO3DE
         m_cfg.cs = m_cellSize;
         m_cfg.ch = m_cellHeight;
         m_cfg.walkableSlopeAngle = m_agentMaxSlope;
-        m_cfg.walkableHeight = (int)ceilf(m_agentHeight / m_cfg.ch);
-        m_cfg.walkableClimb = (int)floorf(m_agentMaxClimb / m_cfg.ch);
-        m_cfg.walkableRadius = (int)ceilf(m_agentRadius / m_cfg.cs);
-        m_cfg.maxEdgeLen = (int)(m_edgeMaxLen / m_cellSize);
+        m_cfg.walkableHeight = static_cast<int>(ceilf(m_agentHeight / m_cfg.ch));
+        m_cfg.walkableClimb = static_cast<int>(floorf(m_agentMaxClimb / m_cfg.ch));
+        m_cfg.walkableRadius = static_cast<int>(ceilf(m_agentRadius / m_cfg.cs));
+        m_cfg.maxEdgeLen = static_cast<int>(m_edgeMaxLen / m_cellSize);
         m_cfg.maxSimplificationError = m_edgeMaxError;
-        m_cfg.minRegionArea = (int)rcSqr(m_regionMinSize);		// Note: area = size*size
-        m_cfg.mergeRegionArea = (int)rcSqr(m_regionMergeSize);	// Note: area = size*size
-        m_cfg.maxVertsPerPoly = (int)m_maxVertsPerPoly;
+        m_cfg.minRegionArea = static_cast<int>(rcSqr(m_regionMinSize));		// Note: area = size*size
+        m_cfg.mergeRegionArea = static_cast<int>(rcSqr(m_regionMergeSize));	// Note: area = size*size
+        m_cfg.maxVertsPerPoly = static_cast<int>(m_maxVertsPerPoly);
         m_cfg.detailSampleDist = m_detailSampleDist < 0.9f ? 0 : m_cellSize * m_detailSampleDist;
         m_cfg.detailSampleMaxError = m_cellHeight * m_detailSampleMaxError;
 
@@ -310,8 +315,8 @@ namespace RecastO3DE
         // Here the bounds of the input mesh are used, but the
         // area could be specified by an user defined box, etc.
 
-        RecastVector3 worldMin(m_worldBounds.GetMin());
-        RecastVector3 worldMax(m_worldBounds.GetMax());
+        const RecastVector3 worldMin(m_worldBounds.GetMin());
+        const RecastVector3 worldMax(m_worldBounds.GetMax());
 
         rcVcopy(m_cfg.bmin, &worldMin.m_x);
         rcVcopy(m_cfg.bmax, &worldMax.m_x);
@@ -325,13 +330,13 @@ namespace RecastO3DE
 
         m_ctx->log(RC_LOG_PROGRESS, "Building navigation:");
         m_ctx->log(RC_LOG_PROGRESS, " - %d x %d cells", m_cfg.width, m_cfg.height);
-        m_ctx->log(RC_LOG_PROGRESS, " - %d verts, %d tris", nverts, ntris);
+        m_ctx->log(RC_LOG_PROGRESS, " - %d verts, %d triangles", vertexCount, triangleCount);
 
         //
         // Step 2. Rasterize input polygon soup.
         //
 
-        // Allocate voxel heightfield where we rasterize our input data to.
+        // Allocate voxel height field where we rasterize our input data to.
         m_solid.reset(rcAllocHeightfield());
         if (!m_solid)
         {
@@ -340,20 +345,20 @@ namespace RecastO3DE
         }
         if (!rcCreateHeightfield(m_ctx.get(), *m_solid, m_cfg.width, m_cfg.height, m_cfg.bmin, m_cfg.bmax, m_cfg.cs, m_cfg.ch))
         {
-            m_ctx->log(RC_LOG_ERROR, "buildNavigation: Could not create solid heightfield.");
+            m_ctx->log(RC_LOG_ERROR, "buildNavigation: Could not create solid height field.");
             return false;
         }
 
         // Allocate array that can hold triangle area types.
         // If you have multiple meshes you need to process, allocate
         // and array which can hold the max number of triangles you need to process.
-        m_triareas.resize(ntris, 0);
+        m_trianglesAreas.resize(triangleCount, 0);
 
         // Find triangles which are walkable based on their slope and rasterize them.
         // If your input data is multiple meshes, you can transform them here, calculate
         // the are type for each of the meshes and rasterize them.
-        rcMarkWalkableTriangles(m_ctx.get(), m_cfg.walkableSlopeAngle, verts, nverts, tris, ntris, m_triareas.data());
-        if (!rcRasterizeTriangles(m_ctx.get(), verts, nverts, tris, m_triareas.data(), ntris, *m_solid /*, m_cfg.walkableClimb*/))
+        rcMarkWalkableTriangles(m_ctx.get(), m_cfg.walkableSlopeAngle, vertices, vertexCount, triangleData, triangleCount, m_trianglesAreas.data());
+        if (!rcRasterizeTriangles(m_ctx.get(), vertices, vertexCount, triangleData, m_trianglesAreas.data(), triangleCount, *m_solid /*, m_cfg.walkableClimb*/))
         {
             m_ctx->log(RC_LOG_ERROR, "buildNavigation: Could not rasterize triangles.");
             return false;
@@ -361,14 +366,14 @@ namespace RecastO3DE
 
         if (!m_keepInterResults)
         {
-            m_triareas.clear();
+            m_trianglesAreas.clear();
         }
 
         //
-        // Step 3. Filter walkables surfaces.
+        // Step 3. Filter walkable surfaces.
         //
 
-        // Once all geoemtry is rasterized, we do initial pass of filtering to
+        // Once all geometry is rasterized, we do initial pass of filtering to
         // remove unwanted overhangs caused by the conservative rasterization
         // as well as filter spans where the character cannot possibly stand.
         if (m_filterLowHangingObstacles)
@@ -378,18 +383,18 @@ namespace RecastO3DE
         if (m_filterWalkableLowHeightSpans)
             rcFilterWalkableLowHeightSpans(m_ctx.get(), m_cfg.walkableHeight, *m_solid);
 
-        //if ( false )
-        /*{
-            m_customDebugDraw.SetColor( AZ::Color( 1.F, 0, 0, 0.1F ) );
-            duDebugDrawHeightfieldSolid( &m_customDebugDraw, *m_solid );
-        }*/
+        if (cl_navmesh_debug)
+        {
+            m_customDebugDraw.SetColor(AZ::Color(1.F, 0, 0, 0.1F));
+            duDebugDrawHeightfieldSolid(&m_customDebugDraw, *m_solid);
+        }
 
         //
         // Step 4. Partition walkable surface to simple regions.
         //
 
-        // Compact the heightfield so that it is faster to handle from now on.
-        // This will result more cache coherent data as well as the neighbours
+        // Compact the height field so that it is faster to handle from now on.
+        // This will result more cache coherent data as well as the neighbors
         // between walkable cells will be calculated.
         m_chf.reset(rcAllocCompactHeightfield());
         if (!m_chf)
@@ -417,7 +422,7 @@ namespace RecastO3DE
 
         {
             // Partition the walkable surface into simple regions without holes.
-            // Monotone partitioning does not need distancefield.
+            // Monotone partitioning does not need distance field.
             if (!rcBuildRegionsMonotone(m_ctx.get(), *m_chf, 0, m_cfg.minRegionArea, m_cfg.mergeRegionArea))
             {
                 m_ctx->log(RC_LOG_ERROR, "buildNavigation: Could not build monotone regions.");
@@ -425,32 +430,34 @@ namespace RecastO3DE
             }
         }
 
-        /*{
-            m_customDebugDraw.SetColor( AZ::Color( 0.F, 1, 0, 1 ) );
-            duDebugDrawCompactHeightfieldSolid( &m_customDebugDraw, *m_chf );
-        }*/
+        if (cl_navmesh_debug)
+        {
+            m_customDebugDraw.SetColor(AZ::Color(0.F, 1, 0, 1));
+            duDebugDrawCompactHeightfieldSolid(&m_customDebugDraw, *m_chf);
+        }
 
         //
         // Step 5. Trace and simplify region contours.
         //
 
         // Create contours.
-        m_cset.reset(rcAllocContourSet());
-        if (!m_cset)
+        m_contourSet.reset(rcAllocContourSet());
+        if (!m_contourSet)
         {
-            m_ctx->log(RC_LOG_ERROR, "buildNavigation: Out of memory 'cset'.");
+            m_ctx->log(RC_LOG_ERROR, "buildNavigation: Out of memory while allocating contours.");
             return false;
         }
-        if (!rcBuildContours(m_ctx.get(), *m_chf, m_cfg.maxSimplificationError, m_cfg.maxEdgeLen, *m_cset))
+        if (!rcBuildContours(m_ctx.get(), *m_chf, m_cfg.maxSimplificationError, m_cfg.maxEdgeLen, *m_contourSet))
         {
             m_ctx->log(RC_LOG_ERROR, "buildNavigation: Could not create contours.");
             return false;
         }
 
-        /*{
-            m_customDebugDraw.SetColor( AZ::Color( 0.F, 0, 1, 1 ) );
-            duDebugDrawContours( &m_customDebugDraw, *m_cset );
-        }*/
+        if (cl_navmesh_debug)
+        {
+            m_customDebugDraw.SetColor(AZ::Color(0.F, 0, 1, 1));
+            duDebugDrawContours(&m_customDebugDraw, *m_contourSet);
+        }
 
         //
         // Step 6. Build polygons mesh from contours.
@@ -463,43 +470,45 @@ namespace RecastO3DE
             m_ctx->log(RC_LOG_ERROR, "buildNavigation: Out of memory 'pmesh'.");
             return false;
         }
-        if (!rcBuildPolyMesh(m_ctx.get(), *m_cset, m_cfg.maxVertsPerPoly, *m_pmesh))
+        if (!rcBuildPolyMesh(m_ctx.get(), *m_contourSet, m_cfg.maxVertsPerPoly, *m_pmesh))
         {
             m_ctx->log(RC_LOG_ERROR, "buildNavigation: Could not triangulate contours.");
             return false;
         }
 
-        /*{
-            m_customDebugDraw.SetColor( AZ::Color( 0.F, 1, 1, 1 ) );
-            duDebugDrawPolyMesh( &m_customDebugDraw, *m_pmesh );
-        }*/
+        if (cl_navmesh_debug)
+        {
+            m_customDebugDraw.SetColor(AZ::Color(0.F, 1, 1, 1));
+            duDebugDrawPolyMesh(&m_customDebugDraw, *m_pmesh);
+        }
 
         //
         // Step 7. Create detail mesh which allows to access approximate height on each polygon.
         //
 
-        m_dmesh.reset(rcAllocPolyMeshDetail());
-        if (!m_dmesh)
+        m_detailMesh.reset(rcAllocPolyMeshDetail());
+        if (!m_detailMesh)
         {
-            m_ctx->log(RC_LOG_ERROR, "buildNavigation: Out of memory 'pmdtl'.");
+            m_ctx->log(RC_LOG_ERROR, "buildNavigation: Out of memory while allocating detail mesh.");
             return false;
         }
 
-        if (!rcBuildPolyMeshDetail(m_ctx.get(), *m_pmesh, *m_chf, m_cfg.detailSampleDist, m_cfg.detailSampleMaxError, *m_dmesh))
+        if (!rcBuildPolyMeshDetail(m_ctx.get(), *m_pmesh, *m_chf, m_cfg.detailSampleDist, m_cfg.detailSampleMaxError, *m_detailMesh))
         {
             m_ctx->log(RC_LOG_ERROR, "buildNavigation: Could not build detail mesh.");
             return false;
         }
 
-        /*{
-            m_customDebugDraw.SetColor( AZ::Color( 0.5F, 1, 1, 1 ) );
-            duDebugDrawPolyMeshDetail( &m_customDebugDraw, *m_dmesh );
-        }*/
+        if (cl_navmesh_debug)
+        {
+            m_customDebugDraw.SetColor(AZ::Color(0.5F, 1, 1, 1));
+            duDebugDrawPolyMeshDetail(&m_customDebugDraw, *m_detailMesh);
+        }
 
         if (!m_keepInterResults)
         {
             m_chf = nullptr;
-            m_cset = nullptr;
+            m_contourSet = nullptr;
         }
 
         // At this point the navigation mesh data is ready, you can access it from m_pmesh.
@@ -525,8 +534,7 @@ namespace RecastO3DE
                 }
             }
 
-            dtNavMeshCreateParams params;
-            memset(&params, 0, sizeof(params));
+            dtNavMeshCreateParams params = {};
             params.verts = m_pmesh->verts;
             params.vertCount = m_pmesh->nverts;
             params.polys = m_pmesh->polys;
@@ -534,11 +542,11 @@ namespace RecastO3DE
             params.polyFlags = m_pmesh->flags;
             params.polyCount = m_pmesh->npolys;
             params.nvp = m_pmesh->nvp;
-            params.detailMeshes = m_dmesh->meshes;
-            params.detailVerts = m_dmesh->verts;
-            params.detailVertsCount = m_dmesh->nverts;
-            params.detailTris = m_dmesh->tris;
-            params.detailTriCount = m_dmesh->ntris;
+            params.detailMeshes = m_detailMesh->meshes;
+            params.detailVerts = m_detailMesh->verts;
+            params.detailVertsCount = m_detailMesh->nverts;
+            params.detailTris = m_detailMesh->tris;
+            params.detailTriCount = m_detailMesh->ntris;
 
             params.offMeshConVerts = nullptr;
             params.offMeshConRad = nullptr;
@@ -579,8 +587,9 @@ namespace RecastO3DE
                 return false;
             }
 
+            if (cl_navmesh_debug)
             {
-                m_customDebugDraw.SetColor(AZ::Color(0.F, 0.9, 0, 1));
+                m_customDebugDraw.SetColor(AZ::Color(0.F, 0.9f, 0, 1));
                 duDebugDrawNavMesh(&m_customDebugDraw, *m_navMesh, DU_DRAWNAVMESH_COLOR_TILES);
             }
 
@@ -610,7 +619,7 @@ namespace RecastO3DE
         {
             if (fromEntity.IsValid() && toEntity.IsValid())
             {
-                AZ::Vector3 start, end;
+                AZ::Vector3 start = AZ::Vector3::CreateZero(), end = AZ::Vector3::CreateZero();
                 AZ::TransformBus::EventResult(start, fromEntity, &AZ::TransformBus::Events::GetWorldTranslation);
                 AZ::TransformBus::EventResult(end, toEntity, &AZ::TransformBus::Events::GetWorldTranslation);
 
@@ -632,7 +641,7 @@ namespace RecastO3DE
 
         {
             RecastVector3 startRecast{ fromWorldPosition }, endRecast{ targetWorldPosition };
-            const float halfExtents[3] = { 1.F, 1., 1 };
+            constexpr float halfExtents[3] = { 1.F, 1., 1 };
 
             dtPolyRef startPoly = 0, endPoly = 0;
 
@@ -659,7 +668,10 @@ namespace RecastO3DE
             // find an approximate path
             m_navQuery->findPath(startPoly, endPoly, nearestStartPoint.data(), nearestEndPoint.data(), &filter, path, &pathLength, maxPathLength);
 
-            //AZ_Printf( "Olex", "from %d to %d, findPath = %d", startPoly, endPoly, pathLength );
+            if (cl_navmesh_debug)
+            {
+                AZ_Printf("NavMesh", "from %d to %d, findPath = %d", startPoly, endPoly, pathLength);
+            }
 
             AZStd::vector<RecastVector3> approximatePath;
             approximatePath.resize(pathLength);
@@ -669,7 +681,10 @@ namespace RecastO3DE
                 RecastVector3 center = GetPolyCenter(m_navMesh.get(), path[pathIndex]);
                 approximatePath.push_back(center);
 
-                //AZ_Printf( "Olex", "path %d = %.1f %.1f %.1f", pathIndex, center.m_x, center.m_y, center.m_z );
+                if (cl_navmesh_debug)
+                {
+                    AZ_Printf("NavMesh", "path %d = %s", pathIndex, AZ::ToString(center.AsVector3()).c_str());
+                }
             }
 
             constexpr int maxDetailedPathLength = 100;
@@ -681,19 +696,20 @@ namespace RecastO3DE
             m_navQuery->findStraightPath(startRecast.data(), endRecast.data(), path, pathLength, detailedPath[0].data(), detailedPathFlags, detailedPolyPathRefs,
                 &detailedPathCount, maxDetailedPathLength);
 
-            //AZ_Printf( "RecastNavigationMeshComponent", "Recast find path took %d microseconds", timer.GetElapsedMicroseconds() );
-
-            /*for ( size_t pathIndex = 1; pathIndex < approximatePath.size(); ++pathIndex )
+            if (cl_navmesh_debug)
             {
-                DebugDraw::DebugDrawRequestBus::Broadcast( &DebugDraw::DebugDrawRequestBus::Events::DrawLineLocationToLocation,
-                    approximatePath[pathIndex - 1].GetAZVector3(), approximatePath[pathIndex].GetAZVector3(), AZ::Color( 1.F, 0, 0, 1 ), 30.F );
+                for (size_t pathIndex = 1; pathIndex < approximatePath.size(); ++pathIndex)
+                {
+                    DebugDraw::DebugDrawRequestBus::Broadcast(&DebugDraw::DebugDrawRequestBus::Events::DrawLineLocationToLocation,
+                        approximatePath[pathIndex - 1].AsVector3(), approximatePath[pathIndex].AsVector3(), AZ::Color(1.F, 0, 0, 1), 30.F);
+                }
+
+                for (size_t detailedIndex = 1; detailedIndex < approximatePath.size(); ++detailedIndex)
+                {
+                    DebugDraw::DebugDrawRequestBus::Broadcast(&DebugDraw::DebugDrawRequestBus::Events::DrawLineLocationToLocation,
+                        detailedPath[detailedIndex - 1].AsVector3(), detailedPath[detailedIndex].AsVector3(), AZ::Color(0.F, 1, 0, 1), 30.F);
+                }
             }
-
-            for ( size_t detailedIndex = 1; detailedIndex < approximatePath.size(); ++detailedIndex )
-            {
-                DebugDraw::DebugDrawRequestBus::Broadcast( &DebugDraw::DebugDrawRequestBus::Events::DrawLineLocationToLocation,
-                    detailedPath[detailedIndex - 1].GetAZVector3(), detailedPath[detailedIndex].GetAZVector3(), AZ::Color( 0.F, 1, 0, 1 ), 30.F );
-            }*/
 
             for (int i = 0; i < detailedPathCount; ++i)
             {
@@ -724,7 +740,7 @@ namespace RecastO3DE
     {
         m_ctx = AZStd::make_unique<CustomContext>();
 
-        AZ::Vector3 position;
+        AZ::Vector3 position = AZ::Vector3::CreateZero();
         AZ::TransformBus::EventResult(position, GetEntityId(), &AZ::TransformBus::Events::GetWorldTranslation);
         m_worldBounds = AZ::Aabb::CreateCenterRadius(position, 100.F);
 
