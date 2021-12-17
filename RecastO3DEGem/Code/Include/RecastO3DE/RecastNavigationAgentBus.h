@@ -18,18 +18,4 @@ namespace RecastO3DE
 
     using RecastNavigationAgentRequestBus = AZ::EBus<RecastNavigationAgentRequests>;
 
-    class RecastNavigationAgentNotifications
-        : public AZ::ComponentBus
-    {
-    public:
-
-        virtual void OnPathFound( [[maybe_unused]] const AZStd::vector<AZ::Vector3>& path ) {}
-        virtual void OnPathFailed() {}
-
-        virtual void OnNextTraversalPoint( [[maybe_unused]] const AZ::Vector3& nextPoint, [[maybe_unused]] const AZ::Vector3& afterNextPoint ) {}
-        virtual void OnTraversalCompleted() {}
-    };
-
-    using RecastNavigationAgentNotificationBus = AZ::EBus<RecastNavigationAgentNotifications>;
-
 } // namespace RecastO3DE

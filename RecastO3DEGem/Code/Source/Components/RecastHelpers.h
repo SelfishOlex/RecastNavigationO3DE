@@ -9,12 +9,12 @@ namespace RecastO3DE
     public:
         RecastVector3() = default;
 
-        // Lumberyard coordinate space
+        // O3DE coordinate space
         explicit RecastVector3( const AZ::Vector3& in )
         {
             m_x = in.GetX();
-            m_y = in.GetZ(); // Notice the flip!
-            m_z = in.GetY(); // Notice the flip!
+            m_y = in.GetZ();
+            m_z = in.GetY();
         }
 
         // Recast coordinate space

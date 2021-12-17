@@ -45,7 +45,7 @@ namespace RecastO3DE
         AZStd::vector<AZ::Vector3> FindPathToPosition(const AZ::Vector3& fromWorldPosition, const AZ::Vector3& targetWorldPosition) override;
 
         // GameEntityContextEventBus
-        void OnGameEntitiesStarted() override { /*UpdateNavigationMesh();*/ }
+        void OnGameEntitiesStarted() override { UpdateNavigationMesh(); }
 
         // InputChannelEventListener
         bool OnInputChannelEventFiltered(const AzFramework::InputChannel& inputChannel) override;
@@ -86,13 +86,13 @@ namespace RecastO3DE
         public:
             void doLog(const rcLogCategory, const char* message, const int) override
             {
-                AZ_Printf("Recast", "%s", message);
+                AZ_Printf("NavMesh", "%s", message);
             }
         };
 
-        AZStd::unique_ptr<rcContext> m_ctx;
+        AZStd::unique_ptr<rcContext> m_context;
 
-        rcConfig m_cfg = {};
+        rcConfig m_config = {};
 
         float m_cellSize = 0.3F;
         float m_cellHeight = 0.2F;
@@ -157,10 +157,7 @@ namespace RecastO3DE
             void SetColor(const AZ::Color& color) { m_currentColor = color; }
 
         protected:
-            void AddVertex(float x, float y, float z, unsigned int color)
-            {
-                m_verticesToDraw.push_back(AZStd::make_pair(AZ::Vector3(x, z, y), color));
-            }
+            void AddVertex(float x, float y, float z, unsigned int color);
 
             AZ::Color m_currentColor{ 1.F, 1, 1, 1 };
 

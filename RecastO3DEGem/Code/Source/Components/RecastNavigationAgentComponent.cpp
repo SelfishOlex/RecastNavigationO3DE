@@ -1,7 +1,10 @@
 #include "RecastNavigationAgentComponent.h"
 
 
+#include <AzCore/Component/Entity.h>
 #include <AzCore/Component/TransformBus.h>
+#include <AzCore/Interface/Interface.h>
+#include <AzCore/RTTI/BehaviorContext.h>
 #include <AzCore/Serialization/EditContext.h>
 #include <AzCore/Serialization/SerializeContext.h>
 #include <RecastO3DE/RecastNavigationCrowdBus.h>
@@ -9,47 +12,102 @@
 
 namespace RecastO3DE
 {
-    void RecastNavigationAgentComponent::Reflect( AZ::ReflectContext* context )
+    void RecastNavigationAgentComponent::Reflect(AZ::ReflectContext* context)
     {
-        if ( AZ::SerializeContext* serialize = azrtti_cast<AZ::SerializeContext*>( context ) )
+        if (AZ::SerializeContext* serialize = azrtti_cast<AZ::SerializeContext*>(context))
         {
             serialize->Class<RecastNavigationAgentComponent, AZ::Component>()
-                ->Version( 1 )
-                ->Field( "Navigation Mesh Entity", &RecastNavigationAgentComponent::m_navigationMeshEntityId )
+                ->Version(1)
+                ->Field("Navigation Mesh Entity", &RecastNavigationAgentComponent::m_navigationMeshEntityId)
                 ;
 
-            if ( AZ::EditContext* ec = serialize->GetEditContext() )
+            if (AZ::EditContext* ec = serialize->GetEditContext())
             {
-                ec->Class<RecastNavigationAgentComponent>( "Recast Navigation Agent", "[Queries Recast Navigation Mesh]" )
-                    ->ClassElement( AZ::Edit::ClassElements::EditorData, "" )
-                    ->Attribute( AZ::Edit::Attributes::AppearsInAddComponentMenu, AZ_CRC( "Game" ) )
-                    ->Attribute( AZ::Edit::Attributes::AutoExpand, true )
-                    ->DataElement( nullptr, &RecastNavigationAgentComponent::m_navigationMeshEntityId, "Navigation Mesh Entity", "" )
+                ec->Class<RecastNavigationAgentComponent>("Recast Navigation Agent", "[Queries Recast Navigation Mesh]")
+                    ->ClassElement(AZ::Edit::ClassElements::EditorData, "")
+                    ->Attribute(AZ::Edit::Attributes::AppearsInAddComponentMenu, AZ_CRC("Game"))
+                    ->Attribute(AZ::Edit::Attributes::AutoExpand, true)
+                    ->DataElement(nullptr, &RecastNavigationAgentComponent::m_navigationMeshEntityId, "Navigation Mesh Entity", "")
                     ;
             }
         }
+
+        if (AZ::BehaviorContext* behaviorContext = azrtti_cast<AZ::BehaviorContext*>(context))
+        {
+            behaviorContext->Class<RecastNavigationAgentComponent>("RecastNavigationAgentComponent")
+                ->Attribute(AZ::Script::Attributes::Module, "navigation")
+                ->Attribute(AZ::Script::Attributes::Category, "Navigation")
+                ->Method("PathToEntity", &RecastNavigationAgentComponent::PathToEntity)
+                ->Method("PathToPosition", &RecastNavigationAgentComponent::PathToPosition)
+                ->Method("CancelPath", &RecastNavigationAgentComponent::CancelPath)
+
+                ->Method("GetPathFoundEvent", [](AZ::EntityId id) -> AZ::Event<const AZStd::vector<AZ::Vector3>&>*
+                    {
+                        AZ::Entity* entity = AZ::Interface<AZ::ComponentApplicationRequests>::Get()->FindEntity(id);
+                        if (!entity)
+                        {
+                            AZ_Warning("RecastNavigationAgentComponent", false, "GetPathFoundEvent failed. The entity with id %s doesn't exist, please provide a valid entity id.", id.ToString().c_str())
+                                return nullptr;
+                        }
+
+                        RecastNavigationAgentComponent* component = entity->FindComponent<RecastNavigationAgentComponent>();
+                        if (!component)
+                        {
+                            AZ_Warning("RecastNavigationAgentComponent", false, "GetPathFoundEvent failed. Entity '%s' (id: %s) is missing MultiplayerSystemComponent, be sure to add MultiplayerSystemComponent to this entity.", entity->GetName().c_str(), id.ToString().c_str())
+                                return nullptr;
+                        }
+
+                        return &component->m_pathFoundEvent;
+                    })
+                ->Attribute(
+                    AZ::Script::Attributes::AzEventDescription,
+                    AZ::BehaviorAzEventDescription{ "Path Found Event", {"Path Points"} })
+
+                        ->Method("GetNextTraversalPointEvent", [](AZ::EntityId id) -> AZ::Event<const AZ::Vector3&, const AZ::Vector3&>*
+                            {
+                                AZ::Entity* entity = AZ::Interface<AZ::ComponentApplicationRequests>::Get()->FindEntity(id);
+                                if (!entity)
+                                {
+                                    AZ_Warning("RecastNavigationAgentComponent", false, "GetNextTraversalPointEvent failed. The entity with id %s doesn't exist, please provide a valid entity id.", id.ToString().c_str())
+                                        return nullptr;
+                                }
+
+                                RecastNavigationAgentComponent* component = entity->FindComponent<RecastNavigationAgentComponent>();
+                                if (!component)
+                                {
+                                    AZ_Warning("RecastNavigationAgentComponent", false, "GetNextTraversalPointEvent failed. Entity '%s' (id: %s) is missing MultiplayerSystemComponent, be sure to add MultiplayerSystemComponent to this entity.", entity->GetName().c_str(), id.ToString().c_str())
+                                        return nullptr;
+                                }
+
+                                return &component->m_nextTraversalPointEvent;
+                            })
+                        ->Attribute(
+                            AZ::Script::Attributes::AzEventDescription,
+                            AZ::BehaviorAzEventDescription{ "Next Traversal Point Event", {"Next Point", "After Next Point"} });
+                            ;
+        }
     }
 
-    void RecastNavigationAgentComponent::GetProvidedServices( [[maybe_unused]] AZ::ComponentDescriptor::DependencyArrayType& provided )
+    void RecastNavigationAgentComponent::GetProvidedServices([[maybe_unused]] AZ::ComponentDescriptor::DependencyArrayType& provided)
     {
     }
 
-    void RecastNavigationAgentComponent::GetIncompatibleServices( [[maybe_unused]] AZ::ComponentDescriptor::DependencyArrayType& incompatible )
+    void RecastNavigationAgentComponent::GetIncompatibleServices([[maybe_unused]] AZ::ComponentDescriptor::DependencyArrayType& incompatible)
     {
     }
 
-    void RecastNavigationAgentComponent::GetRequiredServices( [[maybe_unused]] AZ::ComponentDescriptor::DependencyArrayType& required )
+    void RecastNavigationAgentComponent::GetRequiredServices([[maybe_unused]] AZ::ComponentDescriptor::DependencyArrayType& required)
     {
     }
 
-    void RecastNavigationAgentComponent::GetDependentServices( [[maybe_unused]] AZ::ComponentDescriptor::DependencyArrayType& dependent )
+    void RecastNavigationAgentComponent::GetDependentServices([[maybe_unused]] AZ::ComponentDescriptor::DependencyArrayType& dependent)
     {
     }
 
     void RecastNavigationAgentComponent::Activate()
     {
-        RecastNavigationAgentRequestBus::Handler::BusConnect( GetEntityId() );
-        AZ::TransformNotificationBus::Handler::BusConnect( GetEntityId() );
+        RecastNavigationAgentRequestBus::Handler::BusConnect(GetEntityId());
+        AZ::TransformNotificationBus::Handler::BusConnect(GetEntityId());
         AZ::TickBus::Handler::BusConnect();
     }
 
@@ -60,43 +118,43 @@ namespace RecastO3DE
         AZ::TickBus::Handler::BusDisconnect();
     }
 
-    void RecastNavigationAgentComponent::PathToEntity( AZ::EntityId targetEntity )
+    void RecastNavigationAgentComponent::PathToEntity(AZ::EntityId targetEntity)
     {
-        AZ::Vector3 end;
-        AZ::TransformBus::EventResult( end, targetEntity, &AZ::TransformBus::Events::GetWorldTranslation );
+        AZ::Vector3 end = AZ::Vector3::CreateZero();
+        AZ::TransformBus::EventResult(end, targetEntity, &AZ::TransformBus::Events::GetWorldTranslation);
 
-        PathToPosition( end );
+        PathToPosition(end);
     }
 
-    void RecastNavigationAgentComponent::PathToPosition( const AZ::Vector3& targetWorldPosition )
+    void RecastNavigationAgentComponent::PathToPosition(const AZ::Vector3& targetWorldPosition)
     {
         m_pathPoints.clear();
         m_currentPathIndex = 0;
 
-        AZ::Vector3 start;
-        AZ::TransformBus::EventResult( start, GetEntityId(), &AZ::TransformBus::Events::GetWorldTranslation );
+        AZ::Vector3 start = AZ::Vector3::CreateZero();
+        AZ::TransformBus::EventResult(start, GetEntityId(), &AZ::TransformBus::Events::GetWorldTranslation);
 
-        RecastNavigationMeshRequestBus::EventResult( m_pathPoints, m_navigationMeshEntityId, &RecastNavigationMeshRequestBus::Events::FindPathToPosition, start, targetWorldPosition );
+        RecastNavigationMeshRequestBus::EventResult(m_pathPoints, m_navigationMeshEntityId, &RecastNavigationMeshRequestBus::Events::FindPathToPosition, start, targetWorldPosition);
 
-        if ( m_pathPoints.empty() )
+        if (m_pathPoints.empty())
         {
-            RecastNavigationAgentNotificationBus::Event( GetEntityId(), &RecastNavigationAgentNotificationBus::Events::OnPathFailed );
+            m_pathFoundEvent.Signal({});
         }
         else
         {
-            RecastNavigationAgentNotificationBus::Event( GetEntityId(), &RecastNavigationAgentNotificationBus::Events::OnPathFound, m_pathPoints );
+            m_pathFoundEvent.Signal(m_pathPoints);
 
-            if ( m_pathPoints.size() >= 3 )
+            if (m_pathPoints.size() >= 3)
             {
-                RecastNavigationAgentNotificationBus::Event( GetEntityId(), &RecastNavigationAgentNotificationBus::Events::OnNextTraversalPoint, m_pathPoints[1], m_pathPoints[2] );
+                m_nextTraversalPointEvent.Signal(m_pathPoints[1], m_pathPoints[2]);
             }
-            else if ( m_pathPoints.size() == 2 )
+            else if (m_pathPoints.size() == 2)
             {
-                RecastNavigationAgentNotificationBus::Event( GetEntityId(), &RecastNavigationAgentNotificationBus::Events::OnNextTraversalPoint, m_pathPoints[1], m_pathPoints[1] );
+                m_nextTraversalPointEvent.Signal(m_pathPoints[1], m_pathPoints[1]);
             }
             else
             {
-                RecastNavigationAgentNotificationBus::Event( GetEntityId(), &RecastNavigationAgentNotificationBus::Events::OnNextTraversalPoint, m_pathPoints[0], m_pathPoints[0] );
+                m_nextTraversalPointEvent.Signal(m_pathPoints[0], m_pathPoints[0]);
             }
         }
     }
@@ -105,41 +163,49 @@ namespace RecastO3DE
     {
         m_pathPoints.clear();
         m_currentPathIndex = 0;
-        RecastNavigationAgentNotificationBus::Event( GetEntityId(), &RecastNavigationAgentNotificationBus::Events::OnTraversalCompleted );
+        m_pathFoundEvent.Signal({});
     }
 
-    void RecastNavigationAgentComponent::OnTick( [[maybe_unused]] float deltaTime, [[maybe_unused]] AZ::ScriptTimePoint time )
+    void RecastNavigationAgentComponent::OnTick([[maybe_unused]] float deltaTime, [[maybe_unused]] AZ::ScriptTimePoint time)
     {
         // TODO is this needed?
     }
 
-    void RecastNavigationAgentComponent::OnTransformChanged( [[maybe_unused]] const AZ::Transform& local, [[maybe_unused]] const AZ::Transform& world )
+    void RecastNavigationAgentComponent::OnTransformChanged([[maybe_unused]] const AZ::Transform& local, [[maybe_unused]] const AZ::Transform& world)
     {
-        if ( m_pathPoints.empty() || m_currentPathIndex >= m_pathPoints.size() )
+        if (m_pathPoints.empty() || m_currentPathIndex >= m_pathPoints.size())
         {
             return;
         }
 
-        if ( m_distanceForArrivingToPoint > m_pathPoints[m_currentPathIndex].GetDistance( world.GetTranslation() ) )
+        if (m_distanceForArrivingToPoint > m_pathPoints[m_currentPathIndex].GetDistance(world.GetTranslation()))
         {
             m_currentPathIndex++;
 
-            if ( m_currentPathIndex + 1 == m_pathPoints.size() )
+            if (m_currentPathIndex + 1 == m_pathPoints.size())
             {
-                RecastNavigationAgentNotificationBus::Event( GetEntityId(), &RecastNavigationAgentNotificationBus::Events::OnNextTraversalPoint,
-                    m_pathPoints[m_currentPathIndex], m_pathPoints[m_currentPathIndex] );
+                m_nextTraversalPointEvent.Signal(m_pathPoints[m_currentPathIndex], m_pathPoints[m_currentPathIndex]);
             }
-            else if ( m_currentPathIndex + 1 < m_pathPoints.size() )
+            else if (m_currentPathIndex + 1 < m_pathPoints.size())
             {
-                RecastNavigationAgentNotificationBus::Event( GetEntityId(), &RecastNavigationAgentNotificationBus::Events::OnNextTraversalPoint,
-                    m_pathPoints[m_currentPathIndex], m_pathPoints[m_currentPathIndex + 1] );
+                m_nextTraversalPointEvent.Signal(m_pathPoints[m_currentPathIndex], m_pathPoints[m_currentPathIndex + 1]);
             }
             else
             {
                 m_pathPoints.clear();
                 m_currentPathIndex = 0;
-                RecastNavigationAgentNotificationBus::Event( GetEntityId(), &RecastNavigationAgentNotificationBus::Events::OnTraversalCompleted );
+                m_pathFoundEvent.Signal({});
             }
         }
+    }
+
+    void RecastNavigationAgentComponent::SetPathFoundEvent(AZ::Event<const AZStd::vector<AZ::Vector3>&>::Handler handler)
+    {
+        handler.Connect(m_pathFoundEvent);
+    }
+
+    void RecastNavigationAgentComponent::SetNextTraversalPointEvent(AZ::Event<const AZ::Vector3&, const AZ::Vector3&>::Handler handler)
+    {
+        handler.Connect(m_nextTraversalPointEvent);
     }
 } // namespace RecastO3DE

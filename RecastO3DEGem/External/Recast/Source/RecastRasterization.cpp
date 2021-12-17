@@ -23,6 +23,8 @@
 #include "RecastAlloc.h"
 #include "RecastAssert.h"
 
+#pragma optimize("", off)
+
 inline bool overlapBounds(const float* amin, const float* amax, const float* bmin, const float* bmax)
 {
 	bool overlap = true;

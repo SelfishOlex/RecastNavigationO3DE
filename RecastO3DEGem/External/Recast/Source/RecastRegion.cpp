@@ -26,6 +26,8 @@
 #include "RecastAlloc.h"
 #include "RecastAssert.h"
 
+#pragma optimize("", off)
+
 namespace
 {
 struct LevelStackEntry
