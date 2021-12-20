@@ -25,6 +25,8 @@
                     "Entity_[575506261633]",
                     "Entity_[579801228929]",
                     "Entity_[307781916933]",
+                    "Entity_[353980744471]",
+                    "Entity_[366865646359]",
                     "Entity_[435338480259]",
                     "Entity_[322602833611]"
                 ]
@@ -154,7 +156,14 @@
                 "Component_[16578565737331764849]": {
                     "$type": "{27F1E1A1-8D9D-4C3B-BD3A-AFB9762449C0} TransformComponent",
                     "Id": 16578565737331764849,
-                    "Parent Entity": "Entity_[1176639161715]"
+                    "Parent Entity": "Entity_[1176639161715]",
+                    "Transform Data": {
+                        "Translate": [
+                            0.0,
+                            0.0,
+                            -2.6284618377685547
+                        ]
+                    }
                 },
                 "Component_[16919232076966545697]": {
                     "$type": "EditorInspectorComponent",
@@ -494,6 +503,25 @@
             "Id": "Entity_[307008896654]",
             "Name": "Terrain",
             "Components": {
+                "Component_[10866661332591813647]": {
+                    "$type": "EditorMaterialComponent",
+                    "Id": 10866661332591813647,
+                    "Controller": {
+                        "Configuration": {
+                            "materials": {
+                                "{}": {
+                                    "MaterialAsset": {
+                                        "assetId": {
+                                            "guid": "{0CD745C0-6AA8-569A-A68A-73A3270986C4}",
+                                            "subId": 803645540
+                                        },
+                                        "assetHint": "objects/groudplane/groundplane_512x512m_groundplane_10871786180989855844.azmaterial"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
                 "Component_[11080914034273306508]": {
                     "$type": "EditorLockComponent",
                     "Id": 11080914034273306508
@@ -632,7 +660,7 @@
                         "Translate": [
                             11.566656112670898,
                             17.943161010742188,
-                            -6.57880163192749
+                            -6.637653827667236
                         ],
                         "UniformScale": 10.0
                     }
@@ -659,6 +687,25 @@
                 "Component_[1541659468324613072]": {
                     "$type": "EditorEntitySortComponent",
                     "Id": 1541659468324613072
+                },
+                "Component_[15655311749478820929]": {
+                    "$type": "EditorMaterialComponent",
+                    "Id": 15655311749478820929,
+                    "Controller": {
+                        "Configuration": {
+                            "materials": {
+                                "{}": {
+                                    "MaterialAsset": {
+                                        "assetId": {
+                                            "guid": "{0CD745C0-6AA8-569A-A68A-73A3270986C4}",
+                                            "subId": 803645540
+                                        },
+                                        "assetHint": "objects/groudplane/groundplane_512x512m_groundplane_10871786180989855844.azmaterial"
+                                    }
+                                }
+                            }
+                        }
+                    }
                 },
                 "Component_[16367788754143543793]": {
                     "$type": "EditorInspectorComponent",
@@ -731,8 +778,9 @@
                         "Translate": [
                             7.667352676391602,
                             -6.410163402557373,
-                            -1.3540905714035034
-                        ]
+                            -1.3008164167404175
+                        ],
+                        "UniformScale": 2.0
                     }
                 },
                 "Component_[18218401801837249033]": {
@@ -742,6 +790,24 @@
                 "Component_[2187688490830437931]": {
                     "$type": "EditorOnlyEntityComponent",
                     "Id": 2187688490830437931
+                },
+                "Component_[2345772960464819593]": {
+                    "$type": "EditorMaterialComponent",
+                    "Id": 2345772960464819593,
+                    "Controller": {
+                        "Configuration": {
+                            "materials": {
+                                "{}": {
+                                    "MaterialAsset": {
+                                        "assetId": {
+                                            "guid": "{9C47066E-BD8F-5C1B-B935-933296BBE312}"
+                                        },
+                                        "assetHint": "materials/presets/macbeth/15_red.azmaterial"
+                                    }
+                                }
+                            }
+                        }
+                    }
                 },
                 "Component_[6888809447705696688]": {
                     "$type": "AZ::Render::EditorMeshComponent",
@@ -829,15 +895,268 @@
                     "Parent Entity": "Entity_[1146574390643]",
                     "Transform Data": {
                         "Translate": [
-                            15.166532516479492,
-                            22.123559951782227,
-                            -1.7055339813232422
-                        ]
+                            11.9938383102417,
+                            -2.8889517784118652,
+                            -1.5470271110534668
+                        ],
+                        "UniformScale": 2.0
                     }
                 },
                 "Component_[8233170763776934035]": {
                     "$type": "EditorEntitySortComponent",
                     "Id": 8233170763776934035
+                },
+                "Component_[9133952723614254308]": {
+                    "$type": "EditorMaterialComponent",
+                    "Id": 9133952723614254308,
+                    "Controller": {
+                        "Configuration": {
+                            "materials": {
+                                "{}": {
+                                    "MaterialAsset": {
+                                        "assetId": {
+                                            "guid": "{7C8D9C96-8D79-5AA5-9A1D-DE68760127D7}"
+                                        },
+                                        "assetHint": "materials/presets/macbeth/12_orange_yellow.azmaterial"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "Entity_[353980744471]": {
+            "Id": "Entity_[353980744471]",
+            "Name": "Terrain",
+            "Components": {
+                "Component_[11080914034273306508]": {
+                    "$type": "EditorLockComponent",
+                    "Id": 11080914034273306508
+                },
+                "Component_[11580921279294874775]": {
+                    "$type": "GenericComponentWrapper",
+                    "Id": 11580921279294874775,
+                    "m_template": {
+                        "$type": "RecastWalkableComponent"
+                    }
+                },
+                "Component_[13028154116886158286]": {
+                    "$type": "EditorColliderComponent",
+                    "Id": 13028154116886158286,
+                    "ColliderConfiguration": {
+                        "MaterialSelection": {
+                            "MaterialIds": [
+                                {}
+                            ]
+                        }
+                    },
+                    "ShapeConfiguration": {
+                        "ShapeType": 1,
+                        "Box": {
+                            "Scale": [
+                                10.0,
+                                10.0,
+                                10.0
+                            ]
+                        }
+                    }
+                },
+                "Component_[13798008894885928316]": {
+                    "$type": "{27F1E1A1-8D9D-4C3B-BD3A-AFB9762449C0} TransformComponent",
+                    "Id": 13798008894885928316,
+                    "Parent Entity": "Entity_[1146574390643]",
+                    "Transform Data": {
+                        "Translate": [
+                            18.24003028869629,
+                            10.145331382751465,
+                            -6.783488750457764
+                        ],
+                        "UniformScale": 10.0
+                    }
+                },
+                "Component_[14149956184259368487]": {
+                    "$type": "AZ::Render::EditorMeshComponent",
+                    "Id": 14149956184259368487,
+                    "Controller": {
+                        "Configuration": {
+                            "ModelAsset": {
+                                "assetId": {
+                                    "guid": "{C15CD465-9589-56ED-945F-8416FA4798A3}",
+                                    "subId": 284301017
+                                },
+                                "assetHint": "objects/_primitives/_box_1x1.azmodel"
+                            }
+                        }
+                    }
+                },
+                "Component_[15051292451987548526]": {
+                    "$type": "EditorPendingCompositionComponent",
+                    "Id": 15051292451987548526
+                },
+                "Component_[1541659468324613072]": {
+                    "$type": "EditorEntitySortComponent",
+                    "Id": 1541659468324613072
+                },
+                "Component_[15655311749478820929]": {
+                    "$type": "EditorMaterialComponent",
+                    "Id": 15655311749478820929,
+                    "Controller": {
+                        "Configuration": {
+                            "materials": {
+                                "{}": {
+                                    "MaterialAsset": {
+                                        "assetId": {
+                                            "guid": "{0CD745C0-6AA8-569A-A68A-73A3270986C4}",
+                                            "subId": 803645540
+                                        },
+                                        "assetHint": "objects/groudplane/groundplane_512x512m_groundplane_10871786180989855844.azmaterial"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "Component_[16367788754143543793]": {
+                    "$type": "EditorInspectorComponent",
+                    "Id": 16367788754143543793
+                },
+                "Component_[16385818614104716236]": {
+                    "$type": "EditorDisabledCompositionComponent",
+                    "Id": 16385818614104716236
+                },
+                "Component_[6016631572546337097]": {
+                    "$type": "EditorEntityIconComponent",
+                    "Id": 6016631572546337097
+                },
+                "Component_[9192500387001036201]": {
+                    "$type": "EditorOnlyEntityComponent",
+                    "Id": 9192500387001036201
+                },
+                "Component_[9374761900053339398]": {
+                    "$type": "SelectionComponent",
+                    "Id": 9374761900053339398
+                },
+                "Component_[9726713333549785261]": {
+                    "$type": "EditorVisibilityComponent",
+                    "Id": 9726713333549785261
+                }
+            }
+        },
+        "Entity_[366865646359]": {
+            "Id": "Entity_[366865646359]",
+            "Name": "Terrain",
+            "Components": {
+                "Component_[11080914034273306508]": {
+                    "$type": "EditorLockComponent",
+                    "Id": 11080914034273306508
+                },
+                "Component_[11580921279294874775]": {
+                    "$type": "GenericComponentWrapper",
+                    "Id": 11580921279294874775,
+                    "m_template": {
+                        "$type": "RecastWalkableComponent"
+                    }
+                },
+                "Component_[13028154116886158286]": {
+                    "$type": "EditorColliderComponent",
+                    "Id": 13028154116886158286,
+                    "ColliderConfiguration": {
+                        "MaterialSelection": {
+                            "MaterialIds": [
+                                {}
+                            ]
+                        }
+                    },
+                    "ShapeConfiguration": {
+                        "ShapeType": 1,
+                        "Box": {
+                            "Scale": [
+                                10.0,
+                                10.0,
+                                10.0
+                            ]
+                        }
+                    }
+                },
+                "Component_[13798008894885928316]": {
+                    "$type": "{27F1E1A1-8D9D-4C3B-BD3A-AFB9762449C0} TransformComponent",
+                    "Id": 13798008894885928316,
+                    "Parent Entity": "Entity_[1146574390643]",
+                    "Transform Data": {
+                        "Translate": [
+                            15.708450317382813,
+                            0.687708854675293,
+                            -6.57880163192749
+                        ],
+                        "UniformScale": 10.0
+                    }
+                },
+                "Component_[14149956184259368487]": {
+                    "$type": "AZ::Render::EditorMeshComponent",
+                    "Id": 14149956184259368487,
+                    "Controller": {
+                        "Configuration": {
+                            "ModelAsset": {
+                                "assetId": {
+                                    "guid": "{C15CD465-9589-56ED-945F-8416FA4798A3}",
+                                    "subId": 284301017
+                                },
+                                "assetHint": "objects/_primitives/_box_1x1.azmodel"
+                            }
+                        }
+                    }
+                },
+                "Component_[15051292451987548526]": {
+                    "$type": "EditorPendingCompositionComponent",
+                    "Id": 15051292451987548526
+                },
+                "Component_[1541659468324613072]": {
+                    "$type": "EditorEntitySortComponent",
+                    "Id": 1541659468324613072
+                },
+                "Component_[15655311749478820929]": {
+                    "$type": "EditorMaterialComponent",
+                    "Id": 15655311749478820929,
+                    "Controller": {
+                        "Configuration": {
+                            "materials": {
+                                "{}": {
+                                    "MaterialAsset": {
+                                        "assetId": {
+                                            "guid": "{0CD745C0-6AA8-569A-A68A-73A3270986C4}",
+                                            "subId": 803645540
+                                        },
+                                        "assetHint": "objects/groudplane/groundplane_512x512m_groundplane_10871786180989855844.azmaterial"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "Component_[16367788754143543793]": {
+                    "$type": "EditorInspectorComponent",
+                    "Id": 16367788754143543793
+                },
+                "Component_[16385818614104716236]": {
+                    "$type": "EditorDisabledCompositionComponent",
+                    "Id": 16385818614104716236
+                },
+                "Component_[6016631572546337097]": {
+                    "$type": "EditorEntityIconComponent",
+                    "Id": 6016631572546337097
+                },
+                "Component_[9192500387001036201]": {
+                    "$type": "EditorOnlyEntityComponent",
+                    "Id": 9192500387001036201
+                },
+                "Component_[9374761900053339398]": {
+                    "$type": "SelectionComponent",
+                    "Id": 9374761900053339398
+                },
+                "Component_[9726713333549785261]": {
+                    "$type": "EditorVisibilityComponent",
+                    "Id": 9726713333549785261
                 }
             }
         },
@@ -997,6 +1316,25 @@
                     "$type": "EditorDisabledCompositionComponent",
                     "Id": 16385818614104716236
                 },
+                "Component_[5507985919523144382]": {
+                    "$type": "EditorMaterialComponent",
+                    "Id": 5507985919523144382,
+                    "Controller": {
+                        "Configuration": {
+                            "materials": {
+                                "{}": {
+                                    "MaterialAsset": {
+                                        "assetId": {
+                                            "guid": "{0CD745C0-6AA8-569A-A68A-73A3270986C4}",
+                                            "subId": 803645540
+                                        },
+                                        "assetHint": "objects/groudplane/groundplane_512x512m_groundplane_10871786180989855844.azmaterial"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
                 "Component_[6016631572546337097]": {
                     "$type": "EditorEntityIconComponent",
                     "Id": 6016631572546337097
@@ -1086,6 +1424,25 @@
                 "Component_[1541659468324613072]": {
                     "$type": "EditorEntitySortComponent",
                     "Id": 1541659468324613072
+                },
+                "Component_[15556785828443978357]": {
+                    "$type": "EditorMaterialComponent",
+                    "Id": 15556785828443978357,
+                    "Controller": {
+                        "Configuration": {
+                            "materials": {
+                                "{}": {
+                                    "MaterialAsset": {
+                                        "assetId": {
+                                            "guid": "{0CD745C0-6AA8-569A-A68A-73A3270986C4}",
+                                            "subId": 803645540
+                                        },
+                                        "assetHint": "objects/groudplane/groundplane_512x512m_groundplane_10871786180989855844.azmaterial"
+                                    }
+                                }
+                            }
+                        }
+                    }
                 },
                 "Component_[16367788754143543793]": {
                     "$type": "EditorInspectorComponent",
