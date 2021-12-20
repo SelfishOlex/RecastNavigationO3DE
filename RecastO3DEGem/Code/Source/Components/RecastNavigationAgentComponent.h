@@ -29,8 +29,8 @@ namespace RecastO3DE
         void Deactivate() override;
 
         // RecastNavigationAgentRequestBus
-        void PathToEntity(AZ::EntityId targetEntity) override;
-        void PathToPosition(const AZ::Vector3& targetWorldPosition) override;
+        AZStd::vector<AZ::Vector3> PathToEntity(AZ::EntityId targetEntity) override;
+        AZStd::vector<AZ::Vector3> PathToPosition(const AZ::Vector3& targetWorldPosition) override;
         void CancelPath() override;
 
         // TickBus

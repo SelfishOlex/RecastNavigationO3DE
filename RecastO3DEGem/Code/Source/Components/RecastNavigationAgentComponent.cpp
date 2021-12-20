@@ -10,6 +10,8 @@
 #include <RecastO3DE/RecastNavigationCrowdBus.h>
 #include <RecastO3DE/RecastNavigationMeshBus.h>
 
+#pragma optimize("", off)
+
 namespace RecastO3DE
 {
     void RecastNavigationAgentComponent::Reflect(AZ::ReflectContext* context)
@@ -90,6 +92,7 @@ namespace RecastO3DE
 
     void RecastNavigationAgentComponent::GetProvidedServices([[maybe_unused]] AZ::ComponentDescriptor::DependencyArrayType& provided)
     {
+        provided.push_back(AZ_CRC_CE("RecastNavigationAgentComponent"));
     }
 
     void RecastNavigationAgentComponent::GetIncompatibleServices([[maybe_unused]] AZ::ComponentDescriptor::DependencyArrayType& incompatible)
@@ -118,15 +121,15 @@ namespace RecastO3DE
         AZ::TickBus::Handler::BusDisconnect();
     }
 
-    void RecastNavigationAgentComponent::PathToEntity(AZ::EntityId targetEntity)
+    AZStd::vector<AZ::Vector3> RecastNavigationAgentComponent::PathToEntity(AZ::EntityId targetEntity)
     {
         AZ::Vector3 end = AZ::Vector3::CreateZero();
         AZ::TransformBus::EventResult(end, targetEntity, &AZ::TransformBus::Events::GetWorldTranslation);
 
-        PathToPosition(end);
+        return PathToPosition(end);
     }
 
-    void RecastNavigationAgentComponent::PathToPosition(const AZ::Vector3& targetWorldPosition)
+    AZStd::vector<AZ::Vector3> RecastNavigationAgentComponent::PathToPosition(const AZ::Vector3& targetWorldPosition)
     {
         m_pathPoints.clear();
         m_currentPathIndex = 0;
@@ -157,6 +160,7 @@ namespace RecastO3DE
                 m_nextTraversalPointEvent.Signal(m_pathPoints[0], m_pathPoints[0]);
             }
         }
+        return m_pathPoints;
     }
 
     void RecastNavigationAgentComponent::CancelPath()

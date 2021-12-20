@@ -24,6 +24,7 @@
                     "Entity_[307008896654]",
                     "Entity_[575506261633]",
                     "Entity_[579801228929]",
+                    "Entity_[307781916933]",
                     "Entity_[435338480259]",
                     "Entity_[322602833611]"
                 ]
@@ -531,9 +532,107 @@
                     "Parent Entity": "Entity_[1146574390643]",
                     "Transform Data": {
                         "Translate": [
-                            1.1846489906311035,
-                            2.254314661026001,
+                            3.8213953971862793,
+                            -2.717289686203003,
                             -6.407524108886719
+                        ],
+                        "UniformScale": 10.0
+                    }
+                },
+                "Component_[14149956184259368487]": {
+                    "$type": "AZ::Render::EditorMeshComponent",
+                    "Id": 14149956184259368487,
+                    "Controller": {
+                        "Configuration": {
+                            "ModelAsset": {
+                                "assetId": {
+                                    "guid": "{C15CD465-9589-56ED-945F-8416FA4798A3}",
+                                    "subId": 284301017
+                                },
+                                "assetHint": "objects/_primitives/_box_1x1.azmodel"
+                            }
+                        }
+                    }
+                },
+                "Component_[15051292451987548526]": {
+                    "$type": "EditorPendingCompositionComponent",
+                    "Id": 15051292451987548526
+                },
+                "Component_[1541659468324613072]": {
+                    "$type": "EditorEntitySortComponent",
+                    "Id": 1541659468324613072
+                },
+                "Component_[16367788754143543793]": {
+                    "$type": "EditorInspectorComponent",
+                    "Id": 16367788754143543793
+                },
+                "Component_[16385818614104716236]": {
+                    "$type": "EditorDisabledCompositionComponent",
+                    "Id": 16385818614104716236
+                },
+                "Component_[6016631572546337097]": {
+                    "$type": "EditorEntityIconComponent",
+                    "Id": 6016631572546337097
+                },
+                "Component_[9192500387001036201]": {
+                    "$type": "EditorOnlyEntityComponent",
+                    "Id": 9192500387001036201
+                },
+                "Component_[9374761900053339398]": {
+                    "$type": "SelectionComponent",
+                    "Id": 9374761900053339398
+                },
+                "Component_[9726713333549785261]": {
+                    "$type": "EditorVisibilityComponent",
+                    "Id": 9726713333549785261
+                }
+            }
+        },
+        "Entity_[307781916933]": {
+            "Id": "Entity_[307781916933]",
+            "Name": "Terrain",
+            "Components": {
+                "Component_[11080914034273306508]": {
+                    "$type": "EditorLockComponent",
+                    "Id": 11080914034273306508
+                },
+                "Component_[11580921279294874775]": {
+                    "$type": "GenericComponentWrapper",
+                    "Id": 11580921279294874775,
+                    "m_template": {
+                        "$type": "RecastWalkableComponent"
+                    }
+                },
+                "Component_[13028154116886158286]": {
+                    "$type": "EditorColliderComponent",
+                    "Id": 13028154116886158286,
+                    "ColliderConfiguration": {
+                        "MaterialSelection": {
+                            "MaterialIds": [
+                                {}
+                            ]
+                        }
+                    },
+                    "ShapeConfiguration": {
+                        "ShapeType": 1,
+                        "Box": {
+                            "Scale": [
+                                10.0,
+                                10.0,
+                                10.0
+                            ]
+                        }
+                    }
+                },
+                "Component_[13798008894885928316]": {
+                    "$type": "{27F1E1A1-8D9D-4C3B-BD3A-AFB9762449C0} TransformComponent",
+                    "Id": 13798008894885928316,
+                    "Parent Entity": "Entity_[1146574390643]",
+                    "Transform Data": {
+                        "Translate": [
+                            11.566656112670898,
+                            17.943161010742188,
+                            -6.57880163192749
                         ],
                         "UniformScale": 10.0
                     }
@@ -607,6 +706,15 @@
                     "$type": "EditorVisibilityComponent",
                     "Id": 15235096839482011288
                 },
+                "Component_[15516379801270976923]": {
+                    "$type": "GenericComponentWrapper",
+                    "Id": 15516379801270976923,
+                    "m_template": {
+                        "$type": "NavGoToTargetComponent",
+                        "Goal Entity": "Entity_[322602833611]",
+                        "Speed": 4.0
+                    }
+                },
                 "Component_[15560750968586973225]": {
                     "$type": "EditorPendingCompositionComponent",
                     "Id": 15560750968586973225
@@ -621,9 +729,9 @@
                     "Parent Entity": "Entity_[1146574390643]",
                     "Transform Data": {
                         "Translate": [
-                            -2.292064666748047,
-                            5.631325721740723,
-                            -0.8120287656784058
+                            7.667352676391602,
+                            -6.410163402557373,
+                            -1.3540905714035034
                         ]
                     }
                 },
@@ -721,8 +829,8 @@
                     "Parent Entity": "Entity_[1146574390643]",
                     "Transform Data": {
                         "Translate": [
-                            0.4237689971923828,
-                            13.031800270080566,
+                            15.166532516479492,
+                            22.123559951782227,
                             -1.7055339813232422
                         ]
                     }
@@ -851,9 +959,9 @@
                     "Parent Entity": "Entity_[1146574390643]",
                     "Transform Data": {
                         "Translate": [
-                            -2.1126866340637207,
-                            6.350914001464844,
-                            -6.023337364196777
+                            -4.682845592498779,
+                            3.8487372398376465,
+                            -6.281979560852051
                         ],
                         "UniformScale": 10.0
                     }

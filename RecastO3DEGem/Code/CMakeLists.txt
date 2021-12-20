@@ -29,7 +29,6 @@ ly_add_target(
             ../External/DetourCrowd/Include
             ../External/DetourTileCache/Include
             ../External/Recast/Include
-        PRIVATE
             Source
     BUILD_DEPENDENCIES
         PUBLIC

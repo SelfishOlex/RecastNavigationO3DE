@@ -3,6 +3,7 @@
 #include <AzCore/Module/Module.h>
 
 #include "NavExampleProjectSystemComponent.h"
+#include "NavGoToTargetComponent.h"
 
 namespace NavExampleProject
 {
@@ -19,6 +20,7 @@ namespace NavExampleProject
             // Push results of [MyComponent]::CreateDescriptor() into m_descriptors here.
             m_descriptors.insert(m_descriptors.end(), {
                 NavExampleProjectSystemComponent::CreateDescriptor(),
+                NavGoToTargetComponent::CreateDescriptor(),
             });
         }
 

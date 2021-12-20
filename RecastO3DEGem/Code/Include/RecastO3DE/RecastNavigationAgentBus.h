@@ -11,8 +11,8 @@ namespace RecastO3DE
     {
     public:
 
-        virtual void PathToEntity( AZ::EntityId targetEntity ) = 0;
-        virtual void PathToPosition( const AZ::Vector3& targetWorldPosition ) = 0;
+        virtual AZStd::vector<AZ::Vector3> PathToEntity( AZ::EntityId targetEntity ) = 0;
+        virtual AZStd::vector<AZ::Vector3> PathToPosition( const AZ::Vector3& targetWorldPosition ) = 0;
         virtual void CancelPath() = 0;
     };
 

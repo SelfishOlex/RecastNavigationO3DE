@@ -1,9 +1,5 @@
 #include "RecastNavigationMeshComponent.h"
 
-#include <CrySystemBus.h>
-#include <ISystem.h>
-#include <RecastDebugDraw.h>
-
 #include <AzCore/Component/TransformBus.h>
 #include <AzCore/Console/Console.h>
 #include <AzCore/Jobs/JobFunction.h>
@@ -276,6 +272,7 @@ namespace RecastO3DE
 
         if (results.m_hits.empty())
         {
+            m_waitingOnNavMeshRebuild = false;
             return false;
         }
 
@@ -288,6 +285,8 @@ namespace RecastO3DE
                 if (UpdateNavigationMesh_JobThread())
                 {
                     m_navMeshReady = true;
+                    RecastNavigationMeshNotificationBus::Broadcast(&RecastNavigationMeshNotificationBus::Events::OnNavigationMeshUpdated,
+                        m_navMesh.get(), m_navQuery.get());
                 }
 
                 m_geom.clear();
@@ -716,14 +715,17 @@ namespace RecastO3DE
 
             if (cl_navmesh_debug)
             {
-                for (size_t pathIndex = 1; pathIndex < approximatePath.size(); ++pathIndex)
-                {
-                    DebugDraw::DebugDrawRequestBus::Broadcast(&DebugDraw::DebugDrawRequestBus::Events::DrawLineLocationToLocation,
-                        approximatePath[pathIndex - 1].AsVector3(), approximatePath[pathIndex].AsVector3(), AZ::Color(1.F, 0, 0, 1), 30.F);
-                }
+                //for (size_t pathIndex = 1; pathIndex < approximatePath.size(); ++pathIndex)
+                //{
+                //    DebugDraw::DebugDrawRequestBus::Broadcast(&DebugDraw::DebugDrawRequestBus::Events::DrawLineLocationToLocation,
+                //        approximatePath[pathIndex - 1].AsVector3(), approximatePath[pathIndex].AsVector3(), AZ::Color(1.F, 0, 0, 1), 30.F);
+                //}
 
                 for (size_t detailedIndex = 1; detailedIndex < approximatePath.size(); ++detailedIndex)
                 {
+                    if (detailedPath[detailedIndex].AsVector3().IsZero())
+                        break;
+
                     DebugDraw::DebugDrawRequestBus::Broadcast(&DebugDraw::DebugDrawRequestBus::Events::DrawLineLocationToLocation,
                         detailedPath[detailedIndex - 1].AsVector3(), detailedPath[detailedIndex].AsVector3(), AZ::Color(0.F, 1, 0, 1), 30.F);
                 }
@@ -736,6 +738,11 @@ namespace RecastO3DE
         }
 
         return pathPoints;
+    }
+
+    void RecastNavigationMeshComponent::OnGameEntitiesStarted()
+    {
+        UpdateNavigationMesh();
     }
 
     bool RecastNavigationMeshComponent::OnInputChannelEventFiltered(const AzFramework::InputChannel& inputChannel)
@@ -767,6 +774,8 @@ namespace RecastO3DE
         AzFramework::GameEntityContextEventBus::Handler::BusConnect();
         AzFramework::InputChannelEventListener::Connect();
         AZ::TickBus::Handler::BusConnect();
+
+        UpdateNavigationMesh();
     }
 
     void RecastNavigationMeshComponent::Deactivate()

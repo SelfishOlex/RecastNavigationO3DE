@@ -45,7 +45,7 @@ namespace RecastO3DE
         AZStd::vector<AZ::Vector3> FindPathToPosition(const AZ::Vector3& fromWorldPosition, const AZ::Vector3& targetWorldPosition) override;
 
         // GameEntityContextEventBus
-        void OnGameEntitiesStarted() override { UpdateNavigationMesh(); }
+        void OnGameEntitiesStarted() override;
 
         // InputChannelEventListener
         bool OnInputChannelEventFiltered(const AzFramework::InputChannel& inputChannel) override;

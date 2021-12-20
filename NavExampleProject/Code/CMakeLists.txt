@@ -31,9 +31,10 @@ ly_add_target(
         PUBLIC
             Include
     BUILD_DEPENDENCIES
-        PRIVATE
+        PUBLIC
             AZ::AzGameFramework
             Gem::Atom_AtomBridge.Static
+            Gem::RecastO3DEGem.Static
 )
 
 ly_add_target(
