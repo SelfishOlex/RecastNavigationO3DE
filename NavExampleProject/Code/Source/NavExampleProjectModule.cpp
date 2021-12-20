@@ -2,6 +2,7 @@
 #include <AzCore/Memory/SystemAllocator.h>
 #include <AzCore/Module/Module.h>
 
+#include "NavAgentTransportComponent.h"
 #include "NavExampleProjectSystemComponent.h"
 #include "NavGoToTargetComponent.h"
 
@@ -21,6 +22,7 @@ namespace NavExampleProject
             m_descriptors.insert(m_descriptors.end(), {
                 NavExampleProjectSystemComponent::CreateDescriptor(),
                 NavGoToTargetComponent::CreateDescriptor(),
+                NavAgentTransportComponent::CreateDescriptor(),
             });
         }
 

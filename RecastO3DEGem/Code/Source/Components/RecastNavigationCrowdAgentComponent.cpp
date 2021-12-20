@@ -35,10 +35,12 @@ namespace RecastO3DE
 
     void RecastNavigationCrowdAgentComponent::GetProvidedServices([[maybe_unused]] AZ::ComponentDescriptor::DependencyArrayType& provided)
     {
+        provided.push_back(AZ_CRC("RecastNavigationCrowdAgentComponent"));
     }
 
     void RecastNavigationCrowdAgentComponent::GetIncompatibleServices([[maybe_unused]] AZ::ComponentDescriptor::DependencyArrayType& incompatible)
     {
+        incompatible.push_back(AZ_CRC("RecastNavigationCrowdAgentComponent"));
     }
 
     void RecastNavigationCrowdAgentComponent::GetRequiredServices([[maybe_unused]] AZ::ComponentDescriptor::DependencyArrayType& required)

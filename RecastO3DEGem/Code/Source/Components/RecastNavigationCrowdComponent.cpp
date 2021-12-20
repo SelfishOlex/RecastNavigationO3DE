@@ -120,8 +120,8 @@ namespace RecastO3DE
 
         m_crowd = {};
 
-        RecastNavigationMeshNotificationBus::Handler::BusDisconnect();
-        RecastNavigationCrowdRequestBus::Handler::BusDisconnect();
+        //RecastNavigationMeshNotificationBus::Handler::BusDisconnect();
+        //RecastNavigationCrowdRequestBus::Handler::BusDisconnect();
     }
 
     void RecastNavigationCrowdComponent::OnNavigationMeshUpdated(dtNavMesh* updatedMeshQuery, dtNavMeshQuery* updatedNavMeshQuery)
@@ -367,6 +367,10 @@ namespace RecastO3DE
         else if (agentSettings.m_targetPosition)
         {
             SetTargetPositionForAgent( *agentSettings.m_targetPosition, agentIndex );
+        }
+        else if (m_testTargetEntity.IsValid())
+        {
+            SetTargetEntityForAgent( m_testTargetEntity, agentIndex );
         }
     }
 }

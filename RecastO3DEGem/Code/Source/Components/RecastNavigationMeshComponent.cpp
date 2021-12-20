@@ -89,8 +89,8 @@ namespace RecastO3DE
 
                 const AZ::Transform worldTransform = t; // * AZ::Transform::CreateTranslation(overlapHit.m_shape->GetLocalPose().first);
 
-                AZ_Printf("NavMesh", "world %s, local %s & %s = %s", AZ::ToString(t).c_str(),
-                    AZ::ToString(pose.first).c_str(), AZ::ToString(pose.second).c_str(), AZ::ToString(worldTransform).c_str());
+                /*AZ_Printf("NavMesh", "world %s, local %s & %s = %s", AZ::ToString(t).c_str(),
+                    AZ::ToString(pose.first).c_str(), AZ::ToString(pose.second).c_str(), AZ::ToString(worldTransform).c_str());*/
 
                 overlapHit.m_shape->GetGeometry(vertices, indices, &volumeAabb);
                 if (!vertices.empty())
@@ -100,7 +100,7 @@ namespace RecastO3DE
                         for (const AZ::Vector3& vertex : vertices)
                         {
                             const AZ::Vector3 translated = worldTransform.GetTranslation() + vertex;
-                            AZ_Printf("NavMesh", "physx vertex %s -> %s", AZ::ToString(vertex).c_str(), AZ::ToString(translated).c_str());
+                            //AZ_Printf("NavMesh", "physx vertex %s -> %s", AZ::ToString(vertex).c_str(), AZ::ToString(translated).c_str());
 
                             geom.m_verts.push_back(RecastVector3(translated));
                         }
@@ -127,7 +127,7 @@ namespace RecastO3DE
 
     void RecastNavigationMeshComponent::CustomDebugDraw::begin(duDebugDrawPrimitives prim, [[maybe_unused]] float size)
     {
-        AZ_Printf("RecastNavigationMeshComponent", "duDebugDrawPrimitives = %d", static_cast<int>(prim));
+        //AZ_Printf("RecastNavigationMeshComponent", "duDebugDrawPrimitives = %d", static_cast<int>(prim));
 
         m_currentPrim = prim;
         m_verticesToDraw.clear();
@@ -185,7 +185,7 @@ namespace RecastO3DE
             }
             break;
         case DU_DRAW_LINES:
-            for (size_t i = 1; i < m_verticesToDraw.size(); i += 2)
+            for (size_t i = 1; i < m_verticesToDraw.size(); i++)
             {
                 AZ::Color color = AZ::Color::CreateZero();
                 color.FromU32(m_verticesToDraw[i].second);
@@ -201,7 +201,7 @@ namespace RecastO3DE
     {
         const float temp[3] = {x, y, z};
         const RecastVector3 v( temp );
-        AZ_Printf("NavMesh", "vertex %s", AZ::ToString(v.AsVector3()).c_str());
+        //AZ_Printf("NavMesh", "vertex %s", AZ::ToString(v.AsVector3()).c_str());
         m_verticesToDraw.push_back(AZStd::make_pair(v.AsVector3(), color));
     }
 
@@ -685,10 +685,10 @@ namespace RecastO3DE
             // find an approximate path
             m_navQuery->findPath(startPoly, endPoly, nearestStartPoint.data(), nearestEndPoint.data(), &filter, path, &pathLength, maxPathLength);
 
-            if (cl_navmesh_debug)
-            {
-                AZ_Printf("NavMesh", "from %d to %d, findPath = %d", startPoly, endPoly, pathLength);
-            }
+            //if (cl_navmesh_debug)
+            //{
+            //    AZ_Printf("NavMesh", "from %d to %d, findPath = %d", startPoly, endPoly, pathLength);
+            //}
 
             AZStd::vector<RecastVector3> approximatePath;
             approximatePath.resize(pathLength);
@@ -698,10 +698,10 @@ namespace RecastO3DE
                 RecastVector3 center = GetPolyCenter(m_navMesh.get(), path[pathIndex]);
                 approximatePath.push_back(center);
 
-                if (cl_navmesh_debug)
-                {
-                    AZ_Printf("NavMesh", "path %d = %s", pathIndex, AZ::ToString(center.AsVector3()).c_str());
-                }
+                //if (cl_navmesh_debug)
+                //{
+                //    AZ_Printf("NavMesh", "path %d = %s", pathIndex, AZ::ToString(center.AsVector3()).c_str());
+                //}
             }
 
             constexpr int maxDetailedPathLength = 100;
@@ -775,7 +775,7 @@ namespace RecastO3DE
         AzFramework::InputChannelEventListener::Connect();
         AZ::TickBus::Handler::BusConnect();
 
-        UpdateNavigationMesh();
+        //UpdateNavigationMesh();
     }
 
     void RecastNavigationMeshComponent::Deactivate()
