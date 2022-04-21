@@ -113,6 +113,8 @@ namespace RecastO3DE
                         }
 
                         indicesCount += vertices.size();
+                        vertices.clear();
+                        indices.clear();
                     }
                     else
                     {
